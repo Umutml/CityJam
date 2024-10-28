@@ -16,7 +16,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4937841183040550758
 Transform:
   m_ObjectHideFlags: 0
@@ -39,12 +39,15 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3998580679109229374}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b1bcd6c20746844f91b263d642c92ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildingPrefab: {fileID: 3361853144019719849, guid: 31f2e8175a3bfa2468c9b00bb249b47d, type: 3}
+  rayUpperDiff: 25
+  buildingPrefabs:
+  - {fileID: 3361853144019719849, guid: 31f2e8175a3bfa2468c9b00bb249b47d, type: 3}
+  - {fileID: 1482912660565672094, guid: 9992a4f3ab9aa454a879f83568db612d, type: 3}
   areaObject: {fileID: 0}
   raySpacing: 0.2
   margin: 1
