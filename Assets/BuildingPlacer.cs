@@ -12,6 +12,7 @@ public class BuildingPlacer : MonoBehaviour
     private Vector3 _areaStart;
     private Vector3 _buildingSize;
     private GameObject _nextBuilding;
+    private Quaternion _buildingRotation;
 
     private void Start()
     {
@@ -49,11 +50,12 @@ public class BuildingPlacer : MonoBehaviour
 
                     _nextBuilding = GetRandomBuildingPrefab();
                     _buildingSize = GetBuildingSize(_nextBuilding);
+                    _buildingRotation = GetRandomRotation();
 
                     // Check if the building area is fully within the Buildable area
                     if (IsAreaBuildable(hit.point))
                     {
-                        Instantiate(_nextBuilding, hit.point, GetRandomRotation());
+                        Instantiate(_nextBuilding, hit.point, _buildingRotation);
                     }
                 }
             }
@@ -62,13 +64,20 @@ public class BuildingPlacer : MonoBehaviour
 
     private Quaternion GetRandomRotation()
     {
-        var randomChoice = Random.Range(0, 2);
-        if (randomChoice == 0)
+        var randomChoice = Random.Range(0, 4);
+        switch (randomChoice)
         {
-            return Quaternion.Euler(0, 180, 0); // Flipped backwards
+            case 0:
+                return Quaternion.Euler(0, 0, 0); // No rotation
+            case 1:
+                return Quaternion.Euler(0, 90, 0); // Rotated by 90 degrees
+            case 2:
+                return Quaternion.Euler(0, 180, 0); // Flipped backwards
+            case 3:
+                return Quaternion.Euler(0, 270, 0); // Rotated by 270 degrees
+            default:
+                return Quaternion.identity; // Default to no rotation
         }
-
-        return Quaternion.Euler(0, 90, 0); // Rotated by 90 degrees
     }
 
 
@@ -116,7 +125,7 @@ public class BuildingPlacer : MonoBehaviour
         // Check for overlapping buildings
         var halfExtents = new Vector3(_buildingSize.x / 2, _buildingSize.y / 2, _buildingSize.z / 2);
         var center = point + new Vector3(0, _buildingSize.y / 2, 0); // Adjust center to account for building height
-        var colliders = Physics.OverlapBox(center, halfExtents, Quaternion.identity);
+        var colliders = Physics.OverlapBox(center, halfExtents, _buildingRotation);
         foreach (var coll in colliders)
         {
             if (coll.CompareTag("Building"))

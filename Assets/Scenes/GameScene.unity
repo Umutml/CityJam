@@ -5984,6 +5984,10 @@ PrefabInstance:
       propertyPath: areaObject
       value: 
       objectReference: {fileID: 736868540}
+    - target: {fileID: 3582173550007677086, guid: 9ad9bfa6f788f844fb3bc726bfeb4f00, type: 3}
+      propertyPath: raySpacing
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 3998580679109229374, guid: 9ad9bfa6f788f844fb3bc726bfeb4f00, type: 3}
       propertyPath: m_Name
       value: BuildingPlacer
