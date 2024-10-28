@@ -381,6 +381,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8040083024435161078}
   - component: {fileID: 8338349095900089515}
+  - component: {fileID: 1927621991854127844}
   m_Layer: 0
   m_Name: B6New
   m_TagString: Building
@@ -429,6 +430,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 4.4589343, y: 5.0691276, z: 2.3687465}
   m_Center: {x: 0, y: 2.5101306, z: 0}
+--- !u!114 &1927621991854127844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1482912660565672094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb615a66bdad6d4599c394e67b1d464, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2363917707645273742
 GameObject:
   m_ObjectHideFlags: 0

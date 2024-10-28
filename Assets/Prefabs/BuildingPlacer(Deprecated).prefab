@@ -49,5 +49,5 @@ MonoBehaviour:
   - {fileID: 3361853144019719849, guid: 31f2e8175a3bfa2468c9b00bb249b47d, type: 3}
   - {fileID: 1482912660565672094, guid: 9992a4f3ab9aa454a879f83568db612d, type: 3}
   areaObject: {fileID: 0}
-  raySpacing: 0.2
+  raySpacing: 0.1
   margin: 1

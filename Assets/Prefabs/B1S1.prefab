@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2590279465204448015}
   - component: {fileID: 6938149313264205116}
   - component: {fileID: 7554070003913149235}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: polySurface3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,8 @@ GameObject:
   m_Component:
   - component: {fileID: 9036322201230719902}
   - component: {fileID: 2613264528094094962}
-  m_Layer: 0
+  - component: {fileID: 8094148718977411157}
+  m_Layer: 6
   m_Name: B1S1
   m_TagString: Building
   m_Icon: {fileID: 0}
@@ -142,6 +143,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.855252, y: 2.0435252, z: 1.8480296}
   m_Center: {x: -0.009537458, y: 0.98830986, z: -0.00055503845}
+--- !u!114 &8094148718977411157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3361853144019719849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb615a66bdad6d4599c394e67b1d464, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4812305211683347666
 GameObject:
   m_ObjectHideFlags: 0
@@ -153,7 +166,7 @@ GameObject:
   - component: {fileID: 8169501812000368917}
   - component: {fileID: 4543586678966900797}
   - component: {fileID: 8674394051369846006}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: pCube18
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -237,7 +250,7 @@ GameObject:
   - component: {fileID: 4171981202553900749}
   - component: {fileID: 6141243980409307388}
   - component: {fileID: 6694900889403121365}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: pCube17
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -321,7 +334,7 @@ GameObject:
   - component: {fileID: 3213914943272370744}
   - component: {fileID: 3249917377085457438}
   - component: {fileID: 5088719229917911492}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: pCube15
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -405,7 +418,7 @@ GameObject:
   - component: {fileID: 9152913567844110583}
   - component: {fileID: 5434074471521686613}
   - component: {fileID: 915778239187837501}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: pCube10
   m_TagString: Untagged
   m_Icon: {fileID: 0}
