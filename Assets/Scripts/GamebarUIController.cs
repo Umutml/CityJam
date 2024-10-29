@@ -49,7 +49,7 @@ public class GamebarUIController : MonoBehaviour
                 centeredPosition.y += 2f;
                 foreach (var collectable in sameTypeCollectables)
                 {
-                    collectable.transform.DOMove(centeredPosition, _destroyAnimationDuration).OnComplete(() =>
+                    collectable.transform.DOMove(centeredPosition, _destroyAnimationDuration).SetEase(Ease.InBack).OnComplete(() =>
                     {
                         collectable.DestroyCollectable();
                     });
