@@ -12,7 +12,7 @@
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_instancing
-			#pragma fragmentoption ARB_precision_hint_fastest
+            #pragma fragmentoption ARB_precision_hint_fastest
 
             #include "UnityCG.cginc"
             #include "MiskCG.cginc"
@@ -21,7 +21,7 @@
             {
                 float4 vertex : POSITION;
 
-				DefineEdgeDilateParameters
+                DefineEdgeDilateParameters
 
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
@@ -32,11 +32,11 @@
                 UNITY_VERTEX_OUTPUT_STEREO
             };
 
-			half _DilateShift;
+            half _DilateShift;
 
-			DefineCoords
+            DefineCoords
 
-            v2f vert (appdata v)
+            v2f vert(appdata v)
             {
                 v2f o;
 
@@ -46,9 +46,9 @@
 
                 o.vertex = UnityObjectToClipPos(v.vertex);
 
-				PostprocessCoords
+                PostprocessCoords
 
-				ComputeSmoothScreenShift;
+                ComputeSmoothScreenShift;
 
                 FixDepth
 
@@ -57,7 +57,7 @@
 
             half4 _Color;
 
-            half4 frag (v2f i) : SV_Target
+            half4 frag(v2f i) : SV_Target
             {
                 half4 resultingColor = _Color;
                 resultingColor.rgb *= resultingColor.a;

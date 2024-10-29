@@ -5,7 +5,8 @@
         Cull Front ZWrite Off ZTest Always
 
         Pass
-        {   Stencil 
+        {
+            Stencil
             {
                 Ref 0
                 Comp Always
@@ -17,17 +18,17 @@
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-			#pragma fragmentoption ARB_precision_hint_fastest
+            #pragma fragmentoption ARB_precision_hint_fastest
             #pragma multi_compile_instancing
 
             #include "UnityCG.cginc"
             #include "MiskCG.cginc"
-        
+
             struct appdata
             {
                 float4 vertex : POSITION;
                 half3 normal : NORMAL;
-				DefineTransform
+                DefineTransform
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
@@ -38,35 +39,35 @@
 
                 UNITY_VERTEX_OUTPUT_STEREO
             };
-            
+
             float _EffectSize;
 
             UNITY_DECLARE_SCREENSPACE_TEXTURE(_MainTex);
             half4 _MainTex_ST;
             half4 _MainTex_TexelSize;
 
-			DefineCoords
+            DefineCoords
 
-            v2f vert (appdata v)
+            v2f vert(appdata v)
             {
                 v2f o;
 
                 UNITY_SETUP_INSTANCE_ID(v);
-                UNITY_INITIALIZE_OUTPUT(v2f, o);
+                    UNITY_INITIALIZE_OUTPUT(v2f, o);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-				
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                
-				PostprocessCoords
 
-                ComputeScreenShift
-                
+                o.vertex = UnityObjectToClipPos(v.vertex);
+
+                PostprocessCoords
+
+                    ComputeScreenShift
+
                 o.uv = ComputeScreenPos(o.vertex);
 
                 return o;
             }
 
-            fixed4 frag (v2f i) : SV_Target
+            fixed4 frag(v2f i) : SV_Target
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
 

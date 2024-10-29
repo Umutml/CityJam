@@ -17,76 +17,48 @@ namespace EPOOutline
         A = 8
     }
 
-    [System.Serializable]
+    [Serializable]
     public class OutlineTarget
     {
         public bool IsVisible = false;
 
-        [SerializeField]
-        public ColorMask CutoutMask = ColorMask.A;
+        [SerializeField] public ColorMask CutoutMask = ColorMask.A;
 
-        [SerializeField]
-        private float edgeDilateAmount = 5.0f;
+        [SerializeField] private float edgeDilateAmount = 5.0f;
 
-        [SerializeField]
-        private float frontEdgeDilateAmount = 5.0f;
+        [SerializeField] private float frontEdgeDilateAmount = 5.0f;
 
-        [SerializeField]
-        private float backEdgeDilateAmount = 5.0f;
+        [SerializeField] private float backEdgeDilateAmount = 5.0f;
 
         [SerializeField]
         [FormerlySerializedAs("Renderer")]
         public Renderer renderer;
 
-        [SerializeField]
-        public int SubmeshIndex;
+        [SerializeField] public int SubmeshIndex;
 
-        [SerializeField]
-        public BoundsMode BoundsMode = BoundsMode.Default;
+        [SerializeField] public BoundsMode BoundsMode = BoundsMode.Default;
 
-        [SerializeField]
-        public Bounds Bounds = new Bounds(Vector3.zero, Vector3.one);
+        [SerializeField] public Bounds Bounds = new(Vector3.zero, Vector3.one);
 
-        [SerializeField]
-        [Range(0.0f, 1.0f)]
-        public float CutoutThreshold = 0.5f;
+        [SerializeField] [Range(0.0f, 1.0f)] public float CutoutThreshold = 0.5f;
 
-        [SerializeField]
-        public CullMode CullMode;
+        [SerializeField] public CullMode CullMode;
 
-        [SerializeField]
-        private string cutoutTextureName;
+        [SerializeField] private string cutoutTextureName;
 
-        [SerializeField]
-        public DilateRenderMode DilateRenderingMode;
+        [SerializeField] public DilateRenderMode DilateRenderingMode;
 
-        [SerializeField]
-        private int cutoutTextureIndex;
-        
+        [SerializeField] private int cutoutTextureIndex;
+
         private int? cutoutTextureId;
-        
-        public Renderer Renderer
-        {
-            get
-            {
-                return renderer;
-            }
-        }
 
-        public bool UsesCutout
-        {
-            get
-            {
-                return !string.IsNullOrEmpty(cutoutTextureName);
-            }
-        }
+        public Renderer Renderer => renderer;
+
+        public bool UsesCutout => !string.IsNullOrEmpty(cutoutTextureName);
 
         public int CutoutTextureIndex
         {
-            get
-            {
-                return cutoutTextureIndex;
-            }
+            get => cutoutTextureIndex;
 
             set
             {
@@ -98,14 +70,8 @@ namespace EPOOutline
                 }
             }
         }
-        
-        public int ShiftedSubmeshIndex
-        {
-            get
-            {
-                return SubmeshIndex;
-            }
-        }
+
+        public int ShiftedSubmeshIndex => SubmeshIndex;
 
         public int CutoutTextureId
         {
@@ -120,10 +86,7 @@ namespace EPOOutline
 
         public string CutoutTextureName
         {
-            get
-            {
-                return cutoutTextureName;
-            }
+            get => cutoutTextureName;
 
             set
             {
@@ -134,10 +97,7 @@ namespace EPOOutline
 
         public float EdgeDilateAmount
         {
-            get
-            {
-                return edgeDilateAmount;
-            }
+            get => edgeDilateAmount;
 
             set
             {
@@ -150,10 +110,7 @@ namespace EPOOutline
 
         public float FrontEdgeDilateAmount
         {
-            get
-            {
-                return frontEdgeDilateAmount;
-            }
+            get => frontEdgeDilateAmount;
 
             set
             {
@@ -166,10 +123,7 @@ namespace EPOOutline
 
         public float BackEdgeDilateAmount
         {
-            get
-            {
-                return backEdgeDilateAmount;
-            }
+            get => backEdgeDilateAmount;
 
             set
             {
@@ -182,7 +136,6 @@ namespace EPOOutline
 
         public OutlineTarget()
         {
-
         }
 
         public OutlineTarget(Renderer renderer, int submesh = 0)

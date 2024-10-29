@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 #pragma warning disable CS0649
 
 #if EPO_DOTWEEN
@@ -11,29 +12,21 @@ namespace EPOOutline.Demo
 {
     public class BubbleSpot : MonoBehaviour
     {
-        [SerializeField]
-        private Transform trackPosition;
+        [SerializeField] private Transform trackPosition;
 
-        [SerializeField]
-        private Vector3 trackShift;
+        [SerializeField] private Vector3 trackShift;
 
-        [SerializeField]
-        private Camera targetCamera;
+        [SerializeField] private Camera targetCamera;
 
-        [SerializeField]
-        private Transform bubble;
+        [SerializeField] private Transform bubble;
 
-        [SerializeField]
-        private bool visibleFromBegining = false;
+        [SerializeField] private bool visibleFromBegining = false;
 
-        [SerializeField]
-        private float showDelay = 0.0f;
+        [SerializeField] private float showDelay = 0.0f;
 
-        [SerializeField]
-        private float showDuration = 5.0f;
+        [SerializeField] private float showDuration = 5.0f;
 
-        [SerializeField]
-        private bool once;
+        [SerializeField] private bool once;
 
         private bool wasShown = false;
 

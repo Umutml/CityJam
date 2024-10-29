@@ -24,16 +24,16 @@ namespace EPOOutline
                 var maskMenu = new GenericMenu();
 
                 maskMenu.AddItem(new GUIContent("none"), currentMask == 0, () =>
-                    {
-                        maskProperty.longValue = 0;
-                        serializedObject.ApplyModifiedProperties();
-                    });
+                {
+                    maskProperty.longValue = 0;
+                    serializedObject.ApplyModifiedProperties();
+                });
 
                 maskMenu.AddItem(new GUIContent("all"), currentMask == -1 || currentMask == long.MaxValue, () =>
-                    {
-                        maskProperty.longValue = -1;
-                        serializedObject.ApplyModifiedProperties();
-                    });
+                {
+                    maskProperty.longValue = -1;
+                    serializedObject.ApplyModifiedProperties();
+                });
 
                 for (var index = 0; index < sizeof(long) * 8; index++)
                 {
@@ -47,19 +47,19 @@ namespace EPOOutline
                         if (higherDecima > 63)
                             higherDecima = 63;
 
-                        maskMenu.AddItem(new GUIContent(lowerDecima + "-" + higherDecima + "/" + index), (currentMask & 1 << index) != 0, () =>
-                            {
-                                maskProperty.longValue = currentMask ^ (1 << capturedIndex);
-                                serializedObject.ApplyModifiedProperties();
-                            });
+                        maskMenu.AddItem(new GUIContent(lowerDecima + "-" + higherDecima + "/" + index), (currentMask & (1 << index)) != 0, () =>
+                        {
+                            maskProperty.longValue = currentMask ^ (1 << capturedIndex);
+                            serializedObject.ApplyModifiedProperties();
+                        });
                     }
                     else
                     {
-                         maskMenu.AddItem(new GUIContent(index.ToString()), (currentMask & 1 << index) != 0, () =>
-                            {
-                                maskProperty.longValue = currentMask ^ (1 << capturedIndex);
-                                serializedObject.ApplyModifiedProperties();
-                            });
+                        maskMenu.AddItem(new GUIContent(index.ToString()), (currentMask & (1 << index)) != 0, () =>
+                        {
+                            maskProperty.longValue = currentMask ^ (1 << capturedIndex);
+                            serializedObject.ApplyModifiedProperties();
+                        });
                     }
                 }
 

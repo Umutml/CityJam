@@ -40,7 +40,7 @@ namespace EPOOutline
 
             return msaa;
         }
-        
+
         private static int GetRenderPipelineMSAA()
         {
 #if URP_OUTLINE && UNITY_2019_1_OR_NEWER

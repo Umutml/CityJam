@@ -35,13 +35,7 @@ namespace UnityEngine.UI.Extensions.CasualGame
         private ParticleSystem.MainModule mainModule;
 #endif
 
-        public override Texture mainTexture
-        {
-            get
-            {
-                return currentTexture;
-            }
-        }
+        public override Texture mainTexture => currentTexture;
 
         protected bool Initialize()
         {
@@ -50,6 +44,7 @@ namespace UnityEngine.UI.Extensions.CasualGame
             {
                 _transform = transform;
             }
+
             if (pSystem == null)
             {
                 pSystem = GetComponent<ParticleSystem>();
@@ -90,6 +85,7 @@ namespace UnityEngine.UI.Extensions.CasualGame
                     if (currentTexture == null)
                         currentTexture = Texture2D.whiteTexture;
                 }
+
                 material = currentMaterial;
                 // automatically set scaling
 #if UNITY_5_5_OR_NEWER
@@ -156,26 +152,26 @@ namespace UnityEngine.UI.Extensions.CasualGame
                 isInitialised = true;
             }
 
-            Vector2 temp = Vector2.zero;
-            Vector2 corner1 = Vector2.zero;
-            Vector2 corner2 = Vector2.zero;
+            var temp = Vector2.zero;
+            var corner1 = Vector2.zero;
+            var corner2 = Vector2.zero;
             // iterate through current particles
-            int count = pSystem.GetParticles(particles);
+            var count = pSystem.GetParticles(particles);
 
-            for (int i = 0; i < count; ++i)
+            for (var i = 0; i < count; ++i)
             {
-                ParticleSystem.Particle particle = particles[i];
+                var particle = particles[i];
 
                 // get particle properties
 #if UNITY_5_5_OR_NEWER
-                Vector2 position = (mainModule.simulationSpace == ParticleSystemSimulationSpace.Local ? particle.position : _transform.InverseTransformPoint(particle.position));
+                Vector2 position = mainModule.simulationSpace == ParticleSystemSimulationSpace.Local ? particle.position : _transform.InverseTransformPoint(particle.position);
 #else
                     Vector2 position = (pSystem.simulationSpace == ParticleSystemSimulationSpace.Local ? particle.position : _transform.InverseTransformPoint(particle.position));
 #endif
-                float rotation = -particle.rotation * Mathf.Deg2Rad;
-                float rotation90 = rotation + Mathf.PI / 2;
-                Color32 color = particle.GetCurrentColor(pSystem);
-                float size = particle.GetCurrentSize(pSystem) * 0.5f;
+                var rotation = -particle.rotation * Mathf.Deg2Rad;
+                var rotation90 = rotation + Mathf.PI / 2;
+                var color = particle.GetCurrentColor(pSystem);
+                var size = particle.GetCurrentSize(pSystem) * 0.5f;
 
                 // apply scale
 #if UNITY_5_5_OR_NEWER
@@ -187,34 +183,33 @@ namespace UnityEngine.UI.Extensions.CasualGame
 #endif
 
                 // apply texture sheet animation
-                Vector4 particleUV = imageUV;
+                var particleUV = imageUV;
                 if (textureSheetAnimation.enabled)
                 {
 #if UNITY_5_5_OR_NEWER
-                    float frameProgress = 1 - (particle.remainingLifetime / particle.startLifetime);
+                    var frameProgress = 1 - particle.remainingLifetime / particle.startLifetime;
 
                     if (textureSheetAnimation.frameOverTime.curveMin != null)
                     {
-                        frameProgress = textureSheetAnimation.frameOverTime.curveMin.Evaluate(1 - (particle.remainingLifetime / particle.startLifetime));
+                        frameProgress = textureSheetAnimation.frameOverTime.curveMin.Evaluate(1 - particle.remainingLifetime / particle.startLifetime);
                     }
                     else if (textureSheetAnimation.frameOverTime.curve != null)
                     {
-                        frameProgress = textureSheetAnimation.frameOverTime.curve.Evaluate(1 - (particle.remainingLifetime / particle.startLifetime));
+                        frameProgress = textureSheetAnimation.frameOverTime.curve.Evaluate(1 - particle.remainingLifetime / particle.startLifetime);
                     }
                     else if (textureSheetAnimation.frameOverTime.constant > 0)
                     {
-                        frameProgress = textureSheetAnimation.frameOverTime.constant - (particle.remainingLifetime / particle.startLifetime);
+                        frameProgress = textureSheetAnimation.frameOverTime.constant - particle.remainingLifetime / particle.startLifetime;
                     }
 #else
                     float frameProgress = 1 - (particle.lifetime / particle.startLifetime);
 #endif
 
                     frameProgress = Mathf.Repeat(frameProgress * textureSheetAnimation.cycleCount, 1);
-                    int frame = 0;
+                    var frame = 0;
 
                     switch (textureSheetAnimation.animation)
                     {
-
                         case ParticleSystemAnimationType.WholeSheet:
                             frame = Mathf.FloorToInt(frameProgress * textureSheetAnimationFrames);
                             break;
@@ -222,18 +217,17 @@ namespace UnityEngine.UI.Extensions.CasualGame
                         case ParticleSystemAnimationType.SingleRow:
                             frame = Mathf.FloorToInt(frameProgress * textureSheetAnimation.numTilesX);
 
-                            int row = textureSheetAnimation.rowIndex;
+                            var row = textureSheetAnimation.rowIndex;
                             //                    if (textureSheetAnimation.useRandomRow) { // FIXME - is this handled internally by rowIndex?
                             //                        row = Random.Range(0, textureSheetAnimation.numTilesY, using: particle.randomSeed);
                             //                    }
                             frame += row * textureSheetAnimation.numTilesX;
                             break;
-
                     }
 
                     frame %= textureSheetAnimationFrames;
 
-                    particleUV.x = (frame % textureSheetAnimation.numTilesX) * textureSheetAnimationFrameSize.x;
+                    particleUV.x = frame % textureSheetAnimation.numTilesX * textureSheetAnimationFrameSize.x;
                     particleUV.y = 1.0f - Mathf.FloorToInt(frame / textureSheetAnimation.numTilesX) * textureSheetAnimationFrameSize.y;
                     particleUV.z = particleUV.x + textureSheetAnimationFrameSize.x;
                     particleUV.w = particleUV.y + textureSheetAnimationFrameSize.y;
@@ -291,7 +285,7 @@ namespace UnityEngine.UI.Extensions.CasualGame
                     {
                         // get particle properties
 #if UNITY_5_5_OR_NEWER
-                        Vector3 pos3d = (mainModule.simulationSpace == ParticleSystemSimulationSpace.Local ? particle.position : _transform.InverseTransformPoint(particle.position));
+                        var pos3d = mainModule.simulationSpace == ParticleSystemSimulationSpace.Local ? particle.position : _transform.InverseTransformPoint(particle.position);
 #else
                         Vector3 pos3d = (pSystem.simulationSpace == ParticleSystemSimulationSpace.Local ? particle.position : _transform.InverseTransformPoint(particle.position));
 #endif
@@ -305,15 +299,15 @@ namespace UnityEngine.UI.Extensions.CasualGame
                             position /= canvas.scaleFactor;
 #endif
 
-                        Vector3[] verts = new Vector3[4]
+                        var verts = new Vector3[4]
                         {
-                            new Vector3(-size, -size, 0),
-                            new Vector3(-size, size, 0),
-                            new Vector3(size, size, 0),
-                            new Vector3(size, -size, 0)
+                            new(-size, -size, 0),
+                            new(-size, size, 0),
+                            new(size, size, 0),
+                            new(size, -size, 0)
                         };
 
-                        Quaternion particleRotation = Quaternion.Euler(particle.rotation3D);
+                        var particleRotation = Quaternion.Euler(particle.rotation3D);
 
                         _quad[0].position = pos3d + particleRotation * verts[0];
                         _quad[1].position = pos3d + particleRotation * verts[1];
@@ -323,8 +317,8 @@ namespace UnityEngine.UI.Extensions.CasualGame
                     else
                     {
                         // apply rotation
-                        Vector2 right = new Vector2(Mathf.Cos(rotation), Mathf.Sin(rotation)) * size;
-                        Vector2 up = new Vector2(Mathf.Cos(rotation90), Mathf.Sin(rotation90)) * size;
+                        var right = new Vector2(Mathf.Cos(rotation), Mathf.Sin(rotation)) * size;
+                        var up = new Vector2(Mathf.Cos(rotation90), Mathf.Sin(rotation90)) * size;
 
                         _quad[0].position = position - right - up;
                         _quad[1].position = position - right + up;
@@ -373,6 +367,7 @@ namespace UnityEngine.UI.Extensions.CasualGame
                     }
                 }
             }
+
             if (material == currentMaterial)
                 return;
             pSystem = null;

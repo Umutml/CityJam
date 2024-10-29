@@ -2,10 +2,10 @@
 {
     Properties
     {
-        _PublicOuterColor           ("Outer color", Color) = (1, 0, 0, 1)
-        _PublicInnerColor           ("Inner color", Color) = (0, 1, 0, 1)
-        _PublicFresnelPower         ("Fresnel power", Float) = 2
-        _PublicFresnelMultiplier    ("Fresnel multipler", Float) = 1
+        _PublicOuterColor ("Outer color", Color) = (1, 0, 0, 1)
+        _PublicInnerColor ("Inner color", Color) = (0, 1, 0, 1)
+        _PublicFresnelPower ("Fresnel power", Float) = 2
+        _PublicFresnelMultiplier ("Fresnel multipler", Float) = 1
     }
 
     SubShader
@@ -13,7 +13,7 @@
         Cull [_Cull]
         ZWrite Off
         ZTest Off
-        Blend SrcAlpha OneMinusSrcAlpha 
+        Blend SrcAlpha OneMinusSrcAlpha
 
         Pass
         {
@@ -30,12 +30,12 @@
             #pragma fragment frag
             #pragma multi_compile_instancing
             #pragma multi_compile __ USE_CUTOUT
-			#pragma multi_compile __ TEXARRAY_CUTOUT
-			#pragma multi_compile __ EPO_HDRP			
-			#pragma multi_compile __ USE_INFO_BUFFER
-			#pragma multi_compile __ BACK_RENDERING
-			#pragma fragmentoption ARB_precision_hint_fastest
-			#pragma multi_compile __ BACK_OBSTACLE_RENDERING BACK_MASKING_RENDERING
+            #pragma multi_compile __ TEXARRAY_CUTOUT
+            #pragma multi_compile __ EPO_HDRP
+            #pragma multi_compile __ USE_INFO_BUFFER
+            #pragma multi_compile __ BACK_RENDERING
+            #pragma fragmentoption ARB_precision_hint_fastest
+            #pragma multi_compile __ BACK_OBSTACLE_RENDERING BACK_MASKING_RENDERING
 
 
             #include "UnityCG.cginc"
@@ -44,16 +44,16 @@
             struct appdata
             {
                 float4 vertex : POSITION;
-                
+
                 half3 normal : NORMAL;
 
-#if USE_CUTOUT
+                #if USE_CUTOUT
                 float2 uv : TEXCOORD0;
-#endif
+                #endif
 
-#if USE_INFO_BUFFER
+                #if USE_INFO_BUFFER
 				float4 screenUV : TEXCOORD1;
-#endif
+                #endif
 
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
@@ -61,76 +61,76 @@
             struct v2f
             {
                 float4 vertex : SV_POSITION;
-#if USE_CUTOUT
+                #if USE_CUTOUT
                 float2 uv : TEXCOORD0;
-#endif
+                #endif
 
-#if USE_INFO_BUFFER
+                #if USE_INFO_BUFFER
 				float4 screenUV : TEXCOORD3;
-#endif
+                #endif
 
-				half3 normal : TEXCOORD1;
+                half3 normal : TEXCOORD1;
 
                 half3 viewDir : TEXCOORD2;
 
                 UNITY_VERTEX_OUTPUT_STEREO
             };
-			
-			DEFINE_CUTOUT
-			DefineCoords
+
+            DEFINE_CUTOUT
+            DefineCoords
 
             half4 _PublicOuterColor;
             half4 _PublicInnerColor;
-			half _PublicFresnelPower;
+            half _PublicFresnelPower;
             half _PublicFresnelMultiplier;
 
-            v2f vert (appdata v)
+            v2f vert(appdata v)
             {
                 v2f o;
-                
+
                 UNITY_SETUP_INSTANCE_ID(v);
-                UNITY_INITIALIZE_OUTPUT(v2f, o);
+                    UNITY_INITIALIZE_OUTPUT(v2f, o);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-                
+
                 o.vertex = UnityObjectToClipPos(v.vertex);
 
-				PostprocessCoords
+                PostprocessCoords
 
                 FixDepth
 
-#if USE_INFO_BUFFER
+                #if USE_INFO_BUFFER
 				o.screenUV = ComputeScreenPos(o.vertex);
-#endif
+                #endif
 
                 o.normal = UnityObjectToWorldNormal(v.normal);
 
                 o.viewDir = normalize(ObjSpaceViewDir(v.vertex));
-				TRANSFORM_CUTOUT
+                TRANSFORM_CUTOUT
 
                 return o;
             }
 
             half4 _PublicColor;
 
-#if USE_INFO_BUFFER
+            #if USE_INFO_BUFFER
 			UNITY_DECLARE_SCREENSPACE_TEXTURE(_InfoBuffer);
 			half4 _InfoBuffer_ST;
 			half4 _InfoBuffer_TexelSize;
-#endif
+            #endif
 
-            half4 frag (v2f i) : SV_Target
+            half4 frag(v2f i) : SV_Target
             {
-				CHECK_CUTOUT
+                CHECK_CUTOUT
 
                 half fresnel = pow(saturate(1.0f - dot(normalize(i.normal), normalize(i.viewDir))), _PublicFresnelPower);
 
-				float4 result = lerp(_PublicOuterColor, _PublicInnerColor, fresnel) * _PublicFresnelMultiplier;
+                float4 result = lerp(_PublicOuterColor, _PublicInnerColor, fresnel) * _PublicFresnelMultiplier;
 
-#if USE_INFO_BUFFER
+                #if USE_INFO_BUFFER
 				result.a *= GetScaler(i.screenUV, FetchTexelAtFrom(_InfoBuffer, i.screenUV, _InfoBuffer_ST));
-#endif
+                #endif
 
-				return result;
+                return result;
             }
             ENDCG
         }

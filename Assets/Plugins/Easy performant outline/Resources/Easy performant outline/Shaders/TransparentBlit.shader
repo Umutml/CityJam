@@ -1,6 +1,6 @@
 ﻿Shader "Hidden/TransparentBlit"
-{    
-	Properties
+{
+    Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
     }
@@ -10,14 +10,14 @@
 
         Pass
         {
-			Blend One OneMinusSrcAlpha
+            Blend One OneMinusSrcAlpha
 
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_instancing
-			#pragma fragmentoption ARB_precision_hint_fastest
-            
+            #pragma fragmentoption ARB_precision_hint_fastest
+
             #include "UnityCG.cginc"
             #include "MiskCG.cginc"
 
@@ -36,16 +36,16 @@
 
                 UNITY_VERTEX_OUTPUT_STEREO
             };
-            
+
             half _EffectSize;
 
             UNITY_DECLARE_SCREENSPACE_TEXTURE(_MainTex);
             half4 _MainTex_ST;
             half4 _MainTex_TexelSize;
 
-			DefineCoords
+            DefineCoords
 
-            v2f vert (appdata v)
+            v2f vert(appdata v)
             {
                 v2f o;
 
@@ -55,18 +55,18 @@
 
                 o.vertex = UnityObjectToClipPos(v.vertex);
 
-				PostprocessCoords
+                PostprocessCoords
 
-				o.uv = v.uv;
+                o.uv = v.uv;
 
-#if UNITY_UV_STARTS_AT_TOP
-				ModifyUV
-#endif
+                #if UNITY_UV_STARTS_AT_TOP
+                ModifyUV
+                #endif
 
                 return o;
             }
-            
-            half4 frag (v2f i) : SV_Target
+
+            half4 frag(v2f i) : SV_Target
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
 

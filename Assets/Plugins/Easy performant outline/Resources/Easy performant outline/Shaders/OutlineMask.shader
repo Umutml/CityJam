@@ -13,9 +13,9 @@
             #pragma fragment frag
             #pragma multi_compile_instancing
             #pragma multi_compile __ USE_CUTOUT
-			#pragma multi_compile __ TEXARRAY_CUTOUT
-			#pragma multi_compile __ EPO_HDRP
-			#pragma fragmentoption ARB_precision_hint_fastest
+            #pragma multi_compile __ TEXARRAY_CUTOUT
+            #pragma multi_compile __ EPO_HDRP
+            #pragma fragmentoption ARB_precision_hint_fastest
 
             #include "UnityCG.cginc"
             #include "MiskCG.cginc"
@@ -23,46 +23,46 @@
             struct appdata
             {
                 float4 vertex : POSITION;
-#if USE_CUTOUT
+                #if USE_CUTOUT
                 float2 uv : TEXCOORD0;
-#endif
+                #endif
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct v2f
             {
                 float4 vertex : SV_POSITION;
-#if USE_CUTOUT
+                #if USE_CUTOUT
                 float2 uv : TEXCOORD0;
-#endif
+                #endif
                 UNITY_VERTEX_OUTPUT_STEREO
             };
-            
-			DEFINE_CUTOUT
 
-			DefineCoords
+            DEFINE_CUTOUT
 
-            v2f vert (appdata v)
+            DefineCoords
+
+            v2f vert(appdata v)
             {
                 v2f o;
-                
+
                 UNITY_SETUP_INSTANCE_ID(v);
-                UNITY_INITIALIZE_OUTPUT(v2f, o);
+                    UNITY_INITIALIZE_OUTPUT(v2f, o);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
                 o.vertex = UnityObjectToClipPos(v.vertex);
 
-				PostprocessCoords
+                PostprocessCoords
 
                 FixDepth
-				TRANSFORM_CUTOUT
+                TRANSFORM_CUTOUT
 
                 return o;
             }
 
-            half4 frag (v2f i) : SV_Target
+            half4 frag(v2f i) : SV_Target
             {
-				CHECK_CUTOUT
+                CHECK_CUTOUT
 
                 return 0;
             }

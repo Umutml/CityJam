@@ -19,7 +19,7 @@ namespace CartoonFX
 {
     namespace CustomShaderImporter
     {
-        static class Utils
+        internal static class Utils
         {
             public static bool IsUsingURP()
             {
@@ -46,6 +46,7 @@ namespace CartoonFX
 
             [Tooltip("In case of errors when building the project or with addressables, you can try forcing a specific render pipeline")]
             public RenderPipeline renderPipelineDetection = RenderPipeline.Auto;
+
             public string detectedRenderPipeline = "Built-In Render Pipeline";
             public int strippedLinesCount = 0;
             public string shaderSourceCode;
@@ -54,7 +55,7 @@ namespace CartoonFX
             public ulong variantCount;
             public ulong variantCountUsed;
 
-            enum ComparisonOperator
+            private enum ComparisonOperator
             {
                 Equal,
                 Greater,
@@ -64,7 +65,7 @@ namespace CartoonFX
             }
 
 #if UNITY_2022_2_OR_NEWER
-            const int URP_VERSION = 14;
+            private const int URP_VERSION = 14;
 #elif UNITY_2021_2_OR_NEWER
             const int URP_VERSION = 12;
 #elif UNITY_2021_1_OR_NEWER
@@ -75,7 +76,7 @@ namespace CartoonFX
             const int URP_VERSION = 7;
 #endif
 
-            static ComparisonOperator ParseComparisonOperator(string symbols)
+            private static ComparisonOperator ParseComparisonOperator(string symbols)
             {
                 switch (symbols)
                 {
@@ -88,7 +89,7 @@ namespace CartoonFX
                 }
             }
 
-            static bool CompareWithOperator(int value1, int value2, ComparisonOperator comparisonOperator)
+            private static bool CompareWithOperator(int value1, int value2, ComparisonOperator comparisonOperator)
             {
                 switch (comparisonOperator)
                 {
@@ -101,13 +102,13 @@ namespace CartoonFX
                 }
             }
 
-            bool StartsOrEndWithSpecialTag(string line)
+            private bool StartsOrEndWithSpecialTag(string line)
             {
-                bool startsWithTag = (line.Length > 4 && line[0] == '/' && line[1] == '*' && line[2] == '*' && line[3] == '*');
+                var startsWithTag = line.Length > 4 && line[0] == '/' && line[1] == '*' && line[2] == '*' && line[3] == '*';
                 if (startsWithTag) return true;
 
-                int l = line.Length-1;
-                bool endsWithTag = (line.Length > 4 && line[l] == '/' && line[l-1] == '*' && line[l-2] == '*' && line[l-3] == '*');
+                var l = line.Length - 1;
+                var endsWithTag = line.Length > 4 && line[l] == '/' && line[l - 1] == '*' && line[l - 2] == '*' && line[l - 3] == '*';
                 return endsWithTag;
             }
 
@@ -137,16 +138,16 @@ namespace CartoonFX
                     }
                 }
 
-                StringWriter shaderSource = new StringWriter();
-                string[] sourceLines = File.ReadAllLines(context.assetPath);
-                Stack<bool> excludeCurrentLines = new Stack<bool>();
+                var shaderSource = new StringWriter();
+                var sourceLines = File.ReadAllLines(context.assetPath);
+                var excludeCurrentLines = new Stack<bool>();
                 strippedLinesCount = 0;
 
-                for (int i = 0; i < sourceLines.Length; i++)
+                for (var i = 0; i < sourceLines.Length; i++)
                 {
-                    bool excludeThisLine = excludeCurrentLines.Count > 0 && excludeCurrentLines.Peek();
+                    var excludeThisLine = excludeCurrentLines.Count > 0 && excludeCurrentLines.Peek();
 
-                    string line = sourceLines[i];
+                    var line = sourceLines[i];
                     if (StartsOrEndWithSpecialTag(line))
                     {
                         if (line.StartsWith("/*** BIRP ***/"))
@@ -159,15 +160,15 @@ namespace CartoonFX
                         }
                         else if (line.StartsWith("/*** URP_VERSION "))
                         {
-                            string subline = line.Substring("/*** URP_VERSION ".Length);
-                            int spaceIndex = subline.IndexOf(' ');
-                            string version = subline.Substring(spaceIndex, subline.LastIndexOf(' ') - spaceIndex);
-                            string op = subline.Substring(0, spaceIndex);
+                            var subline = line.Substring("/*** URP_VERSION ".Length);
+                            var spaceIndex = subline.IndexOf(' ');
+                            var version = subline.Substring(spaceIndex, subline.LastIndexOf(' ') - spaceIndex);
+                            var op = subline.Substring(0, spaceIndex);
 
                             var compOp = ParseComparisonOperator(op);
-                            int compVersion = int.Parse(version);
+                            var compVersion = int.Parse(version);
 
-                            bool isCorrectURP = CompareWithOperator(URP_VERSION, compVersion, compOp);
+                            var isCorrectURP = CompareWithOperator(URP_VERSION, compVersion, compOp);
                             excludeCurrentLines.Push(excludeThisLine || !isCorrectURP);
                         }
                         else if (excludeThisLine && line.StartsWith("/*** END"))
@@ -193,23 +194,23 @@ namespace CartoonFX
 
                 // Get source code and extract name
                 shaderSourceCode = shaderSource.ToString();
-                int idx = shaderSourceCode.IndexOf("Shader \"", StringComparison.InvariantCulture) + 8;
-                int idx2 = shaderSourceCode.IndexOf('"', idx);
+                var idx = shaderSourceCode.IndexOf("Shader \"", StringComparison.InvariantCulture) + 8;
+                var idx2 = shaderSourceCode.IndexOf('"', idx);
                 shaderName = shaderSourceCode.Substring(idx, idx2 - idx);
                 shaderErrors = null;
 
-                Shader shader = ShaderUtil.CreateShaderAsset(context, shaderSourceCode, true);
+                var shader = ShaderUtil.CreateShaderAsset(context, shaderSourceCode, true);
 
                 if (ShaderUtil.ShaderHasError(shader))
                 {
-                    string[] shaderSourceLines = shaderSourceCode.Split(new [] {'\n'}, StringSplitOptions.None);
+                    var shaderSourceLines = shaderSourceCode.Split(new[] { '\n' }, StringSplitOptions.None);
                     var errors = ShaderUtil.GetShaderMessages(shader);
                     shaderErrors = Array.ConvertAll(errors, err => $"{err.message} (line {err.line})");
-                    foreach (ShaderMessage error in errors)
+                    foreach (var error in errors)
                     {
-                        string message = error.line <= 0 ?
-                            string.Format("Shader Error in '{0}' (in file '{2}')\nError: {1}\n", shaderName, error.message, error.file) :
-                            string.Format("Shader Error in '{0}' (line {2} in file '{3}')\nError: {1}\nLine: {4}\n", shaderName, error.message, error.line, error.file, shaderSourceLines[error.line-1]);
+                        var message = error.line <= 0
+                            ? string.Format("Shader Error in '{0}' (in file '{2}')\nError: {1}\n", shaderName, error.message, error.file)
+                            : string.Format("Shader Error in '{0}' (line {2} in file '{3}')\nError: {1}\nLine: {4}\n", shaderName, error.message, error.line, error.file, shaderSourceLines[error.line - 1]);
                         if (error.severity == ShaderCompilerMessageSeverity.Warning)
                         {
                             Debug.LogWarning(message);
@@ -232,14 +233,14 @@ namespace CartoonFX
                 // internal static extern ulong GetVariantCount(Shader s, bool usedBySceneOnly);
                 variantCount = 0;
                 variantCountUsed = 0;
-                MethodInfo getVariantCountReflection = typeof(ShaderUtil).GetMethod("GetVariantCount", BindingFlags.Static | BindingFlags.NonPublic);
+                var getVariantCountReflection = typeof(ShaderUtil).GetMethod("GetVariantCount", BindingFlags.Static | BindingFlags.NonPublic);
                 if (getVariantCountReflection != null)
                 {
                     try
                     {
-                        object result = getVariantCountReflection.Invoke(null, new object[] {shader, false});
+                        var result = getVariantCountReflection.Invoke(null, new object[] { shader, false });
                         variantCount = (ulong)result;
-                        result = getVariantCountReflection.Invoke(null, new object[] {shader, true});
+                        result = getVariantCountReflection.Invoke(null, new object[] { shader, true });
                         variantCountUsed = (ulong)result;
                     }
                     catch
@@ -252,15 +253,16 @@ namespace CartoonFX
 
         namespace Inspector
         {
-            [CustomEditor(typeof(CFXR_ShaderImporter)), CanEditMultipleObjects]
+            [CustomEditor(typeof(CFXR_ShaderImporter))]
+            [CanEditMultipleObjects]
             public class TCP2ShaderImporter_Editor : Editor
             {
-                CFXR_ShaderImporter Importer => (CFXR_ShaderImporter) this.target;
+                private CFXR_ShaderImporter Importer => (CFXR_ShaderImporter)target;
 
                 // From: UnityEditor.ShaderInspectorPlatformsPopup
-                static string FormatCount(ulong count)
+                private static string FormatCount(ulong count)
                 {
-                    bool flag = count > 1000000000uL;
+                    var flag = count > 1000000000uL;
                     string result;
                     if (flag)
                     {
@@ -268,14 +270,14 @@ namespace CartoonFX
                     }
                     else
                     {
-                        bool flag2 = count > 1000000uL;
+                        var flag2 = count > 1000000uL;
                         if (flag2)
                         {
                             result = (count / 1000000.0).ToString("f2", CultureInfo.InvariantCulture.NumberFormat) + "M";
                         }
                         else
                         {
-                            bool flag3 = count > 1000uL;
+                            var flag3 = count > 1000uL;
                             if (flag3)
                             {
                                 result = (count / 1000.0).ToString("f2", CultureInfo.InvariantCulture.NumberFormat) + "k";
@@ -286,11 +288,13 @@ namespace CartoonFX
                             }
                         }
                     }
+
                     return result;
                 }
 
-                static GUIStyle _HelpBoxRichTextStyle;
-                static GUIStyle HelpBoxRichTextStyle
+                private static GUIStyle _HelpBoxRichTextStyle;
+
+                private static GUIStyle HelpBoxRichTextStyle
                 {
                     get
                     {
@@ -301,28 +305,30 @@ namespace CartoonFX
                             _HelpBoxRichTextStyle.margin = new RectOffset(4, 4, 0, 0);
                             _HelpBoxRichTextStyle.padding = new RectOffset(4, 4, 4, 4);
                         }
+
                         return _HelpBoxRichTextStyle;
                     }
                 }
 
                 public override void OnInspectorGUI()
                 {
-                    bool multipleValues = serializedObject.isEditingMultipleObjects;
+                    var multipleValues = serializedObject.isEditingMultipleObjects;
 
-                    CFXR_ShaderImporter.RenderPipeline detection = ((CFXR_ShaderImporter)target).renderPipelineDetection;
-                    bool isUsingURP = Utils.IsUsingURP();
+                    var detection = ((CFXR_ShaderImporter)target).renderPipelineDetection;
+                    var isUsingURP = Utils.IsUsingURP();
                     serializedObject.Update();
 
                     GUILayout.Label(Importer.shaderName);
-                    string variantsText = "";
+                    var variantsText = "";
                     if (Importer.variantCount > 0 && Importer.variantCountUsed > 0)
                     {
-                        string variantsCount = multipleValues ? "-" : FormatCount(Importer.variantCount);
-                        string variantsCountUsed = multipleValues ? "-" : FormatCount(Importer.variantCountUsed);
+                        var variantsCount = multipleValues ? "-" : FormatCount(Importer.variantCount);
+                        var variantsCountUsed = multipleValues ? "-" : FormatCount(Importer.variantCountUsed);
                         variantsText = $"\nVariants (currently used): <b>{variantsCountUsed}</b>\nVariants (including unused): <b>{variantsCount}</b>";
                     }
-                    string strippedLinesCount = multipleValues ? "-" : Importer.strippedLinesCount.ToString();
-                    string renderPipeline = Importer.detectedRenderPipeline;
+
+                    var strippedLinesCount = multipleValues ? "-" : Importer.strippedLinesCount.ToString();
+                    var renderPipeline = Importer.detectedRenderPipeline;
                     if (targets is { Length: > 1 })
                     {
                         foreach (CFXR_ShaderImporter importer in targets)
@@ -334,7 +340,9 @@ namespace CartoonFX
                             }
                         }
                     }
-                    GUILayout.Label($"{(detection == CFXR_ShaderImporter.RenderPipeline.Auto ? "Detected" : "Forced")} render pipeline: <b>{renderPipeline}</b>\nStripped lines: <b>{strippedLinesCount}</b>{variantsText}", HelpBoxRichTextStyle);
+
+                    GUILayout.Label($"{(detection == CFXR_ShaderImporter.RenderPipeline.Auto ? "Detected" : "Forced")} render pipeline: <b>{renderPipeline}</b>\nStripped lines: <b>{strippedLinesCount}</b>{variantsText}",
+                        HelpBoxRichTextStyle);
 
                     if (Importer.shaderErrors != null && Importer.shaderErrors.Length > 0)
                     {
@@ -345,19 +353,21 @@ namespace CartoonFX
                         GUI.color = color;
                     }
 
-                    bool shouldReimportShader = false;
-                    bool compiledForURP = Importer.detectedRenderPipeline.Contains("Universal");
+                    var shouldReimportShader = false;
+                    var compiledForURP = Importer.detectedRenderPipeline.Contains("Universal");
                     if (detection == CFXR_ShaderImporter.RenderPipeline.Auto
                         && ((isUsingURP && !compiledForURP) || (!isUsingURP && compiledForURP)))
                     {
                         GUILayout.Space(4);
-                        Color guiColor = GUI.color;
+                        var guiColor = GUI.color;
                         GUI.color *= Color.yellow;
-                        EditorGUILayout.HelpBox("The detected render pipeline doesn't match the pipeline this shader was compiled for!\nPlease reimport the shaders for them to work in the current render pipeline.", MessageType.Warning);
+                        EditorGUILayout.HelpBox("The detected render pipeline doesn't match the pipeline this shader was compiled for!\nPlease reimport the shaders for them to work in the current render pipeline.",
+                            MessageType.Warning);
                         if (GUILayout.Button("Reimport Shader"))
                         {
                             shouldReimportShader = true;
                         }
+
                         GUI.color = guiColor;
                     }
 
@@ -373,7 +383,7 @@ namespace CartoonFX
 
                     if (GUILayout.Button("View Source", GUILayout.ExpandWidth(false)))
                     {
-                        string path = Application.temporaryCachePath + "/" + Importer.shaderName.Replace("/", "-") + "_Source.shader";
+                        var path = Application.temporaryCachePath + "/" + Importer.shaderName.Replace("/", "-") + "_Source.shader";
                         if (File.Exists(path))
                         {
                             File.SetAttributes(path, FileAttributes.Normal);
@@ -409,11 +419,11 @@ namespace CartoonFX
                     }
                 }
 
-                void ReimportShader()
+                private void ReimportShader()
                 {
-                    foreach (UnityEngine.Object t in targets)
+                    foreach (var t in targets)
                     {
-                        string path = AssetDatabase.GetAssetPath(t);
+                        var path = AssetDatabase.GetAssetPath(t);
                         AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
                     }
                 }

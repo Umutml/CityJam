@@ -29,11 +29,10 @@ namespace EPOOutline
 
         private static ListRequest request;
         private static AddRequest addRequest;
-        
+
         private Texture2D logoImage;
 
-        [SerializeField]
-        private SetupType setupType;
+        [SerializeField] private SetupType setupType;
 
         public enum SetupType
         {
@@ -42,20 +41,13 @@ namespace EPOOutline
             HDRP
         }
 
-        [SerializeField]
-        private Vector2 scroll;
+        [SerializeField] private Vector2 scroll;
 
         public static bool ShouldShow
         {
-            get
-            {
-                return PlayerPrefs.GetInt(SRPShownID, 0) == 0;
-            }
+            get => PlayerPrefs.GetInt(SRPShownID, 0) == 0;
 
-            set
-            {
-                PlayerPrefs.SetInt(SRPShownID, value ? 0 : 1);
-            }
+            set => PlayerPrefs.SetInt(SRPShownID, value ? 0 : 1);
         }
 
         private static List<BuildTargetGroup> GetApplicableGroups()
@@ -70,10 +62,10 @@ namespace EPOOutline
                 if (value.GetCustomAttribute<ObsoleteAttribute>() != null)
                     continue;
 
-                var targetValue = (BuildTargetGroup) value.GetValue(null);
+                var targetValue = (BuildTargetGroup)value.GetValue(null);
                 if (targetValue == BuildTargetGroup.Unknown)
                     continue;
-                
+
                 groups.Add(targetValue);
             }
 
@@ -127,7 +119,7 @@ namespace EPOOutline
             return false;
         }
 #endif
-        
+
 #if URP_OUTLINE || HDRP_OUTLINE
         private static bool CheckHasActiveRenderers()
         {
@@ -205,7 +197,7 @@ namespace EPOOutline
                 PlayerSettings.SetScriptingDefineSymbolsForGroup(group, definitions + ";" + definition);
             }
         }
-        
+
         private static void Check()
         {
             if (EditorApplication.isPlaying)
@@ -280,7 +272,7 @@ namespace EPOOutline
             if (!ShouldShow)
                 return;
 
-            var window = EditorWindow.GetWindow<EPOSetuper>(true, "EPO Setuper", false);
+            var window = GetWindow<EPOSetuper>(true, "EPO Setuper", false);
             window.maxSize = new Vector2(500, 500);
             window.minSize = new Vector2(500, 500);
         }
@@ -377,7 +369,9 @@ namespace EPOOutline
                 return;
             }
             else
+            {
                 EditorGUILayout.HelpBox(new GUIContent("Pipeline asset has been found in packages"));
+            }
 
             if (!CheckHasHDRPOutlineDefinition())
             {
@@ -386,7 +380,9 @@ namespace EPOOutline
                     AddHDRPDefinition();
             }
             else
+            {
                 EditorGUILayout.HelpBox(new GUIContent("HDRP_OUTLINE definition is added"));
+            }
 
 #if HDRP_OUTLINE
             if (!CheckHasActiveRenderers())
@@ -456,7 +452,7 @@ namespace EPOOutline
 
             var packageName =
 #if UNITY_2019_3_OR_NEWER
-                    "com.unity.render-pipelines.universal";
+                "com.unity.render-pipelines.universal";
 #else
                     "com.unity.render-pipelines.lightweight";
 #endif
@@ -471,7 +467,9 @@ namespace EPOOutline
                 return;
             }
             else
+            {
                 EditorGUILayout.HelpBox(new GUIContent("Pipeline asset has been found in packages"));
+            }
 
             if (!CheckHasURPOutlineDefinition())
             {
@@ -480,7 +478,9 @@ namespace EPOOutline
                     AddURPDefinition();
             }
             else
+            {
                 EditorGUILayout.HelpBox(new GUIContent("URP_OUTLINE definition is added"));
+            }
 
 #if URP_OUTLINE
             if (!CheckHasActiveRenderers())
@@ -533,7 +533,6 @@ namespace EPOOutline
             else
                 EditorGUILayout.HelpBox(new GUIContent("Feature is added for all renderers in use"));
 #endif
-
         }
 
         public void OnDestroy()
@@ -542,4 +541,4 @@ namespace EPOOutline
         }
     }
 #endif
-        }
+}

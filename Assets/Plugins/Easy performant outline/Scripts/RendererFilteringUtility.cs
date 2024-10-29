@@ -11,7 +11,7 @@ namespace EPOOutline
 {
     public static class RendererFilteringUtility
     {
-        private static List<Outlinable> filteredOutlinables = new List<Outlinable>();
+        private static List<Outlinable> filteredOutlinables = new();
 
         public static void Filter(Camera camera, OutlineParameters parameters)
         {

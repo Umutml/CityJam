@@ -44,8 +44,8 @@ namespace EPOOutline
         public static bool IsUsingVR(OutlineParameters parameters)
         {
             return UnityEngine.XR.XRSettings.enabled
-                && !parameters.IsEditorCamera
-                && parameters.EyeMask != StereoTargetEyeMask.None;
+                   && !parameters.IsEditorCamera
+                   && parameters.EyeMask != StereoTargetEyeMask.None;
         }
 
         public static RenderTextureInfo GetTargetInfo(OutlineParameters parameters, int width, int height, int depthBuffer, bool forceNoAA, bool noFiltering)
@@ -82,7 +82,7 @@ namespace EPOOutline
             var info = GetTargetInfo(parameters, width, height, depthBuffer, forceNoAA, noFiltering);
 
             parameters.Buffer.GetTemporaryRT(id, info.Descriptor, info.FilterMode);
-            parameters.Buffer.SetRenderTarget(RenderTargetUtility.ComposeTarget(parameters, id));
+            parameters.Buffer.SetRenderTarget(ComposeTarget(parameters, id));
             if (clear)
                 parameters.Buffer.ClearRenderTarget(true, true, Color.clear);
         }

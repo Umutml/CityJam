@@ -7,9 +7,9 @@ namespace EPOOutline
 {
     public class MeshPool
     {
-        private Queue<Mesh> freeMeshes = new Queue<Mesh>();
+        private Queue<Mesh> freeMeshes = new();
 
-        private List<Mesh> allMeshes = new List<Mesh>();
+        private List<Mesh> allMeshes = new();
 
         public Mesh AllocateMesh()
         {
@@ -37,7 +37,7 @@ namespace EPOOutline
 
     public class OutlineParameters
     {
-        public readonly MeshPool MeshPool = new MeshPool();
+        public readonly MeshPool MeshPool = new();
 
         public Camera Camera;
         public RenderTargetIdentifier Target;
@@ -81,10 +81,10 @@ namespace EPOOutline
 
         public Mesh BlitMesh;
 
-        public List<Outlinable> OutlinablesToRender = new List<Outlinable>();
+        public List<Outlinable> OutlinablesToRender = new();
 
         private bool isInitialized = false;
-        
+
         public Vector2Int MakeScaledVector(int x, int y)
         {
             var fx = (float)x;
@@ -107,7 +107,7 @@ namespace EPOOutline
         {
             if (OutlinablesToRender.Count == 0)
                 return;
-            
+
             UseInfoBuffer = OutlinablesToRender.Find(x => x != null && ((x.DrawingMode & (OutlinableDrawingMode.Obstacle | OutlinableDrawingMode.Mask)) != 0 || x.ComplexMaskingEnabled)) != null;
             if (UseInfoBuffer)
                 return;

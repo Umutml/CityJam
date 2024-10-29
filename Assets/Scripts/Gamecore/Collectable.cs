@@ -13,17 +13,18 @@ namespace Gamecore
         [SerializeField] private CollectableTypes collectableTypes;
 
         // Create a method to get the collectable type
-    
-    
+
+
         public CollectableTypes GetCollectableType()
         {
             return collectableTypes;
         }
-    
+
         public void DestroyCollectable()
         {
             Destroy(gameObject);
         }
+
         private void Awake()
         {
             _outlineable = GetComponent<Outlinable>();
@@ -48,10 +49,10 @@ namespace Gamecore
                 _outlineable.enabled = false;
             }
         }
-    
+
         public void ChangeRenderLayerWithChilds(string layerName)
         {
-            int layer = LayerMask.NameToLayer(layerName);
+            var layer = LayerMask.NameToLayer(layerName);
             SetLayerRecursively(gameObject, layer);
         }
 
@@ -80,7 +81,7 @@ namespace Gamecore
                 transform.DOScale(firstScale, _duration).SetEase(Ease.OutQuad); // Reset the scale
             });
         }
-    
+
         public void DisableCollider()
         {
             _boxCollider.enabled = false;
@@ -90,14 +91,14 @@ namespace Gamecore
         public void Bounce()
         {
             // Bounce the collectable
-            Vector3 downPosition = transform.position - new Vector3(0, 0.3f, 0);
-            Vector3 upPosition = transform.position;
+            var downPosition = transform.position - new Vector3(0, 0.3f, 0);
+            var upPosition = transform.position;
 
-            Sequence sequence = DOTween.Sequence();
+            var sequence = DOTween.Sequence();
             sequence.Append(transform.DOMove(downPosition, 0.1f));
             sequence.Append(transform.DOMove(upPosition, 0.1f).SetEase(Ease.InOutBounce));
         }
-    
+
         public void ResetObjectState()
         {
             // Reset the object state

@@ -1,20 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 #pragma warning disable CS0649
 
 namespace EPOOutline.Demo
 {
     public class CameraController : MonoBehaviour
     {
-        [SerializeField]
-        private Vector3 shift;
+        [SerializeField] private Vector3 shift;
 
-        [SerializeField]
-        private float moveSpeed = 2.0f;
+        [SerializeField] private float moveSpeed = 2.0f;
 
-        [SerializeField]
-        private Transform target;
+        [SerializeField] private Transform target;
 
         private void Update()
         {

@@ -10,7 +10,7 @@
         Cull [_Cull]
         ZWrite Off
         ZTest Off
-        Blend SrcAlpha OneMinusSrcAlpha 
+        Blend SrcAlpha OneMinusSrcAlpha
 
         Pass
         {
@@ -27,12 +27,12 @@
             #pragma fragment frag
             #pragma multi_compile_instancing
             #pragma multi_compile __ USE_CUTOUT
-			#pragma multi_compile __ TEXARRAY_CUTOUT
-			#pragma multi_compile __ EPO_HDRP
-			#pragma multi_compile __ USE_INFO_BUFFER
-			#pragma multi_compile __ BACK_RENDERING
-			#pragma fragmentoption ARB_precision_hint_fastest
-			#pragma multi_compile __ BACK_OBSTACLE_RENDERING BACK_MASKING_RENDERING
+            #pragma multi_compile __ TEXARRAY_CUTOUT
+            #pragma multi_compile __ EPO_HDRP
+            #pragma multi_compile __ USE_INFO_BUFFER
+            #pragma multi_compile __ BACK_RENDERING
+            #pragma fragmentoption ARB_precision_hint_fastest
+            #pragma multi_compile __ BACK_OBSTACLE_RENDERING BACK_MASKING_RENDERING
 
             #include "UnityCG.cginc"
             #include "../MiskCG.cginc"
@@ -40,13 +40,13 @@
             struct appdata
             {
                 float4 vertex : POSITION;
-#if USE_CUTOUT
+                #if USE_CUTOUT
                 float2 uv : TEXCOORD0;
-#endif
+                #endif
 
-#if USE_INFO_BUFFER
+                #if USE_INFO_BUFFER
 				float4 screenUV : TEXCOORD1;
-#endif
+                #endif
 
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
@@ -54,59 +54,59 @@
             struct v2f
             {
                 float4 vertex : SV_POSITION;
-#if USE_CUTOUT
+                #if USE_CUTOUT
                 float2 uv : TEXCOORD0;
-#endif
+                #endif
 
-#if USE_INFO_BUFFER
+                #if USE_INFO_BUFFER
 				float4 screenUV : TEXCOORD1;
-#endif
+                #endif
 
                 UNITY_VERTEX_OUTPUT_STEREO
             };
-			
-			DEFINE_CUTOUT
-			DefineCoords
 
-            v2f vert (appdata v)
+            DEFINE_CUTOUT
+            DefineCoords
+
+            v2f vert(appdata v)
             {
                 v2f o;
-                
+
                 UNITY_SETUP_INSTANCE_ID(v);
                 UNITY_INITIALIZE_OUTPUT(v2f, o);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
                 o.vertex = UnityObjectToClipPos(v.vertex);
 
-				PostprocessCoords
+                PostprocessCoords
 
-#if USE_INFO_BUFFER
+                #if USE_INFO_BUFFER
 				o.screenUV = ComputeScreenPos(o.vertex);
-#endif
+                #endif
 
                 FixDepth
-				TRANSFORM_CUTOUT
+                TRANSFORM_CUTOUT
 
                 return o;
             }
 
             half4 _PublicColor;
 
-#if USE_INFO_BUFFER
+            #if USE_INFO_BUFFER
 			UNITY_DECLARE_SCREENSPACE_TEXTURE(_InfoBuffer);
 			half4 _InfoBuffer_ST;
 			half4 _InfoBuffer_TexelSize;
-#endif
+            #endif
 
-			half4 frag(v2f i) : SV_Target
-			{
-				CHECK_CUTOUT
+            half4 frag(v2f i) : SV_Target
+            {
+                CHECK_CUTOUT
 
-				float4 result = _PublicColor;
+                float4 result = _PublicColor;
 
-#if USE_INFO_BUFFER
+                #if USE_INFO_BUFFER
 				result.a *= GetScaler(i.screenUV, FetchTexelAtFrom(_InfoBuffer, i.screenUV, _InfoBuffer_ST));
-#endif
+                #endif
 
                 return result;
             }

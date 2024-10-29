@@ -32,7 +32,8 @@ namespace EPOOutline
 
             var infoPosition = drawingPosition;
             infoPosition.height = EditorGUIUtility.singleLineHeight * 3.0f + EditorGUIUtility.standardVerticalSpacing * 2.0f;
-            EditorGUI.HelpBox(infoPosition, "Changing dilate and blur settings will enable info buffer which will increase draw calls and will have some performance impact. Use Outliner settings if you don't need per object settings.", MessageType.Warning);
+            EditorGUI.HelpBox(infoPosition,
+                "Changing dilate and blur settings will enable info buffer which will increase draw calls and will have some performance impact. Use Outliner settings if you don't need per object settings.", MessageType.Warning);
 
             NewLine(ref drawingPosition);
             NewLine(ref drawingPosition);
@@ -83,7 +84,7 @@ namespace EPOOutline
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             return (EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing) * 3.0f + EditorGUI.GetPropertyHeight(property.FindPropertyRelative("fillPass")) +
-                EditorGUIUtility.singleLineHeight * 2.0f + EditorGUIUtility.standardVerticalSpacing * 1.0f;// + EditorGUI.GetPropertyHeight(property.FindPropertyRelative("outlineRenderingPass"));
+                   EditorGUIUtility.singleLineHeight * 2.0f + EditorGUIUtility.standardVerticalSpacing * 1.0f; // + EditorGUI.GetPropertyHeight(property.FindPropertyRelative("outlineRenderingPass"));
         }
     }
 }

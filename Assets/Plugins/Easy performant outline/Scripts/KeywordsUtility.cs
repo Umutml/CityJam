@@ -5,22 +5,22 @@ namespace EPOOutline
 {
     public static class KeywordsUtility
     {
-        private static Dictionary<BlurType, string> BlurTypes = new Dictionary<BlurType, string>
-                {
-                    { BlurType.Anisotropic,     "ANISOTROPIC_BLUR" },
-                    { BlurType.Box,             "BOX_BLUR" },
-                    { BlurType.Gaussian5x5,     "GAUSSIAN5X5" },
-                    { BlurType.Gaussian9x9,     "GAUSSIAN9X9" },
-                    { BlurType.Gaussian13x13,   "GAUSSIAN13X13" }
-                };
+        private static Dictionary<BlurType, string> BlurTypes = new()
+        {
+            { BlurType.Anisotropic, "ANISOTROPIC_BLUR" },
+            { BlurType.Box, "BOX_BLUR" },
+            { BlurType.Gaussian5x5, "GAUSSIAN5X5" },
+            { BlurType.Gaussian9x9, "GAUSSIAN9X9" },
+            { BlurType.Gaussian13x13, "GAUSSIAN13X13" }
+        };
 
-        private static Dictionary<DilateQuality, string> DilateQualityKeywords = new Dictionary<DilateQuality, string>
-                {
-                    { DilateQuality.Base,       "BASE_QALITY_DILATE" },
-                    { DilateQuality.High,       "HIGH_QUALITY_DILATE" },
-                    { DilateQuality.Ultra,      "ULTRA_QUALITY_DILATE" }
-                };
-        
+        private static Dictionary<DilateQuality, string> DilateQualityKeywords = new()
+        {
+            { DilateQuality.Base, "BASE_QALITY_DILATE" },
+            { DilateQuality.High, "HIGH_QUALITY_DILATE" },
+            { DilateQuality.Ultra, "ULTRA_QUALITY_DILATE" }
+        };
+
         public static string GetBackKeyword(ComplexMaskingMode mode)
         {
             switch (mode)
@@ -52,7 +52,7 @@ namespace EPOOutline
                 case DilateQuality.Ultra:
                     return "ULTRA_QUALITY_DILATE";
                 default:
-                    throw new System.Exception("Unknown dilate quality level");
+                    throw new Exception("Unknown dilate quality level");
             }
         }
 

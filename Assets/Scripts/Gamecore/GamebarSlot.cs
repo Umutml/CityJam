@@ -16,12 +16,12 @@ namespace Gamecore
         {
             _rectTransform = GetComponent<RectTransform>();
         }
-    
+
         public void SetAnimating(bool isAnimating)
         {
             _isAnimating = isAnimating;
         }
-    
+
         public bool IsAnimating()
         {
             return _isAnimating;
@@ -32,17 +32,17 @@ namespace Gamecore
         {
             _occupyingObject = occupyingObject;
         }
-    
+
         public void ClearOccupyingObject()
         {
             _occupyingObject = null;
         }
-    
+
         public GameObject GetOccupyingObject()
         {
             return _occupyingObject;
         }
-    
+
         public void SetOccupied(bool isOccupied)
         {
             IsOccupied = isOccupied;
@@ -55,10 +55,10 @@ namespace Gamecore
 
             _sequenceActive = true;
 
-            Vector3 downPosition = _rectTransform.position - new Vector3(0, 0.2f, 0);
-            Vector3 upPosition = _rectTransform.position;
+            var downPosition = _rectTransform.position - new Vector3(0, 0.2f, 0);
+            var upPosition = _rectTransform.position;
 
-            Sequence sequence = DOTween.Sequence();
+            var sequence = DOTween.Sequence();
             sequence.Append(_rectTransform.DOMove(downPosition, 0.1f));
             sequence.Append(_rectTransform.DOMove(upPosition, 0.1f).SetEase(Ease.InOutBounce)).OnComplete(() =>
             {
@@ -66,6 +66,5 @@ namespace Gamecore
                 _isAnimating = false;
             });
         }
-    
     }
 }

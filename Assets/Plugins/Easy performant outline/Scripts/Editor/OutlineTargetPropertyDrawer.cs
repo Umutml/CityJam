@@ -11,7 +11,8 @@ namespace EPOOutline
     {
         private static float lastWidth = 0.0f;
 
-        private static GUIContent errorContent = new GUIContent("'Optimize mesh data' option is enabled in build settings.\n In order the feature to work it should be disabled.\n It might seems to work in editor but will not work in build if the setting is enabled.");
+        private static GUIContent errorContent =
+            new("'Optimize mesh data' option is enabled in build settings.\n In order the feature to work it should be disabled.\n It might seems to work in editor but will not work in build if the setting is enabled.");
 
         private void Shift(ref Rect rect, bool right)
         {
@@ -42,11 +43,11 @@ namespace EPOOutline
 
             var cutoutIsInUse = !string.IsNullOrEmpty(textureNameProperty.stringValue);
             menu.AddItem(new GUIContent("none"), string.IsNullOrEmpty(textureNameProperty.stringValue), () =>
-                {
-                    textureNameProperty.stringValue = string.Empty;
-                    textureNameProperty.serializedObject.ApplyModifiedProperties();
-                });
-            
+            {
+                textureNameProperty.stringValue = string.Empty;
+                textureNameProperty.serializedObject.ApplyModifiedProperties();
+            });
+
             var rendererReference = renderer.objectReferenceValue as Renderer;
             var referenceName = "none";
             var usingCutout = cutoutIsInUse && rendererReference != null;
@@ -68,10 +69,10 @@ namespace EPOOutline
                             referenceName = ShaderUtil.GetPropertyDescription(material.shader, index) + " '" + propertyName + "'";
 
                         menu.AddItem(new GUIContent(ShaderUtil.GetPropertyDescription(material.shader, index) + " '" + propertyName + "'"), equals && usingCutout, () =>
-                            {
-                                textureNameProperty.stringValue = propertyName;
-                                textureNameProperty.serializedObject.ApplyModifiedProperties();
-                            });
+                        {
+                            textureNameProperty.stringValue = propertyName;
+                            textureNameProperty.serializedObject.ApplyModifiedProperties();
+                        });
                     }
                 }
             }
@@ -83,7 +84,7 @@ namespace EPOOutline
 
             var sourceLable = usingCutout ? referenceName : "none";
 
-            var cutoutSourceLabel = "Cutout source: " + sourceLable; 
+            var cutoutSourceLabel = "Cutout source: " + sourceLable;
 
             if (EditorGUI.DropdownButton(cutoutPosition, new GUIContent(cutoutSourceLabel), FocusType.Passive))
                 menu.ShowAsContext();
@@ -245,8 +246,9 @@ namespace EPOOutline
             var appropriateToUseEdgeDilate = renderer.objectReferenceValue != null && !(renderer.objectReferenceValue as Renderer).gameObject.isStatic;
 
             var linesCount = renderer.objectReferenceValue == null ||
-                renderer.objectReferenceValue != null && (renderer.objectReferenceValue as Renderer).gameObject.isStatic
-                ? 3.0f : 4.0f;
+                             (renderer.objectReferenceValue != null && (renderer.objectReferenceValue as Renderer).gameObject.isStatic)
+                ? 3.0f
+                : 4.0f;
 
             if (usingCutout || rendererReference is SpriteRenderer)
                 linesCount += 1.0f;
@@ -257,7 +259,7 @@ namespace EPOOutline
             if (property.FindPropertyRelative("BoundsMode").intValue == (int)BoundsMode.Manual)
                 linesCount += 2.0f;
 
-            float shift = 0.0f;
+            var shift = 0.0f;
             var isDilateRenderingMode = property.FindPropertyRelative("DilateRenderingMode").intValue == (int)DilateRenderMode.EdgeShift;
             if (isDilateRenderingMode && PlayerSettings.stripUnusedMeshComponents)
                 shift = EditorStyles.helpBox.CalcHeight(errorContent, lastWidth - 60) + EditorGUIUtility.singleLineHeight * 3.0f;

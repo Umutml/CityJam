@@ -91,6 +91,7 @@ namespace Managers
             IncrementLevel();
             LevelCompleted();
         }
+
         private void IncrementLevel()
         {
             if (currentLevelData.levelNumber + 1 >= levelDatas.Length)
@@ -99,14 +100,17 @@ namespace Managers
                 currentLevelData = levelDatas[0];
                 return;
             }
+
             currentLevelData = levelDatas[currentLevelData.levelNumber + 1];
         }
+
         private void LevelCompleted()
         {
             IsLevelPlaying = false;
             Debug.Log("Level Completed!");
             OnLevelCompleted?.Invoke();
         }
+
         public void PlayNextLevel()
         {
             if (currentLevelData.levelNumber < levelDatas.Length)
@@ -118,7 +122,7 @@ namespace Managers
                 Debug.Log("All levels completed!");
             }
         }
-        
+
         private void OnDestroy()
         {
             GamebarController.OnCollectableDestroyed -= CheckLevelCompletion;

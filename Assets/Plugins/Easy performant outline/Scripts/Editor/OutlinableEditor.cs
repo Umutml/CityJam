@@ -11,7 +11,7 @@ namespace EPOOutline
     {
         private UnityEditorInternal.ReorderableList targetsList;
 
-        private void CheckList(UnityEditor.SerializedProperty targets)
+        private void CheckList(SerializedProperty targets)
         {
             if (targetsList == null)
             {
@@ -20,106 +20,107 @@ namespace EPOOutline
                 targetsList.drawHeaderCallback = position => EditorGUI.LabelField(position, "Renderers. All renderers that will be included to outline rendering should be in the list.");
 
                 targetsList.drawElementCallback = (position, item, isActive, isFocused) =>
-                    {
-                        var renderPosition = position;
-                        var element = targets.GetArrayElementAtIndex(item);
-                        var rendererItem = element.FindPropertyRelative("renderer");
-                        var reference = rendererItem.objectReferenceValue;
+                {
+                    var renderPosition = position;
+                    var element = targets.GetArrayElementAtIndex(item);
+                    var rendererItem = element.FindPropertyRelative("renderer");
+                    var reference = rendererItem.objectReferenceValue;
 
-                        EditorGUI.PropertyField(renderPosition, element, new GUIContent(reference == null ? "Null" : reference.name), true);
-                    };
+                    EditorGUI.PropertyField(renderPosition, element, new GUIContent(reference == null ? "Null" : reference.name), true);
+                };
 
                 targetsList.elementHeightCallback = (index) => EditorGUI.GetPropertyHeight(targets.GetArrayElementAtIndex(index));
 
                 targetsList.onRemoveCallback = (list) =>
-                    {
-                        var index = list.index;
-                        targets.DeleteArrayElementAtIndex(index);
-                        targets.serializedObject.ApplyModifiedProperties();
-                    };
+                {
+                    var index = list.index;
+                    targets.DeleteArrayElementAtIndex(index);
+                    targets.serializedObject.ApplyModifiedProperties();
+                };
 
                 targetsList.onAddDropdownCallback = (buttonRect, targetList) =>
+                {
+                    var outlinable = target as Outlinable;
+                    var items = outlinable.gameObject.GetComponentsInChildren<Renderer>(true);
+                    var menu = new GenericMenu();
+
+                    if (!Application.isPlaying)
                     {
-                        var outlinable = target as Outlinable;
-                        var items = outlinable.gameObject.GetComponentsInChildren<Renderer>(true);
-                        var menu = new GenericMenu();
-
-                        if (!Application.isPlaying)
+                        menu.AddItem(new GUIContent("Add all"), false, () =>
                         {
-                            menu.AddItem(new GUIContent("Add all"), false, () =>
-                                {
-                                    (target as Outlinable).AddAllChildRenderersToRenderingList(RenderersAddingMode.All);
+                            (target as Outlinable).AddAllChildRenderersToRenderingList(RenderersAddingMode.All);
 
-                                    EditorUtility.SetDirty(target);
-                                });
+                            EditorUtility.SetDirty(target);
+                        });
 
-                            menu.AddItem(new GUIContent("Add all basic"), false, () =>
-                                {
-                                    (target as Outlinable).AddAllChildRenderersToRenderingList(RenderersAddingMode.MeshRenderer | RenderersAddingMode.SkinnedMeshRenderer);
+                        menu.AddItem(new GUIContent("Add all basic"), false, () =>
+                        {
+                            (target as Outlinable).AddAllChildRenderersToRenderingList(RenderersAddingMode.MeshRenderer | RenderersAddingMode.SkinnedMeshRenderer);
 
-                                    EditorUtility.SetDirty(target);
-                                });
+                            EditorUtility.SetDirty(target);
+                        });
+                    }
+
+                    menu.AddItem(new GUIContent("Empty"), false, () =>
+                    {
+                        (target as Outlinable).TryAddTarget(new OutlineTarget());
+
+                        EditorUtility.SetDirty(target);
+                    });
+
+                    foreach (var item in items)
+                    {
+                        var found = false;
+                        for (var index = 0; index < targets.arraySize; index++)
+                        {
+                            var element = targets.GetArrayElementAtIndex(index);
+                            var elementRenderer = element.FindPropertyRelative("renderer");
+                            if (elementRenderer.objectReferenceValue == item)
+                            {
+                                found = true;
+                                break;
+                            }
                         }
 
-                        menu.AddItem(new GUIContent("Empty"), false, () =>
-                            {
-                                (target as Outlinable).TryAddTarget(new OutlineTarget());
-
-                                EditorUtility.SetDirty(target);
-                            });
-
-                        foreach (var item in items)
+                        var path = string.Empty;
+                        if (item.transform != outlinable.transform)
                         {
-                            var found = false;
-                            for (var index = 0; index < targets.arraySize; index++)
+                            var parent = item.transform;
+                            do
                             {
-                                var element = targets.GetArrayElementAtIndex(index);
-                                var elementRenderer = element.FindPropertyRelative("renderer");
-                                if (elementRenderer.objectReferenceValue == item)
-                                {
-                                    found = true;
-                                    break;
-                                }
-                            }
-
-                            var path = string.Empty;
-                            if (item.transform != outlinable.transform)
-                            {
-                                var parent = item.transform;
-                                do
-                                {
-                                    path = string.Format("{0}/{1}", parent.ToString(), path);
-                                    parent = parent.transform.parent;
-                                }
-                                while (parent != outlinable.transform);
-
                                 path = string.Format("{0}/{1}", parent.ToString(), path);
+                                parent = parent.transform.parent;
+                            } while (parent != outlinable.transform);
 
-                                path = path.Substring(0, path.Length - 1);
-                            }
-                            else
-                                path = item.ToString();
+                            path = string.Format("{0}/{1}", parent.ToString(), path);
 
-                            GenericMenu.MenuFunction function = () =>
-                                {
-                                    var index = targets.arraySize;
-                                    targets.InsertArrayElementAtIndex(index);
-                                    var arrayItem = targets.GetArrayElementAtIndex(index);
-                                    var renderer = arrayItem.FindPropertyRelative("Renderer");
-                                    arrayItem.FindPropertyRelative("CutoutThreshold").floatValue = 0.5f;
-                                    renderer.objectReferenceValue = item;
-
-                                    serializedObject.ApplyModifiedProperties();
-                                };
-
-                            if (found)
-                                function = null;
-
-                            menu.AddItem(new GUIContent(path), found, function);
+                            path = path.Substring(0, path.Length - 1);
+                        }
+                        else
+                        {
+                            path = item.ToString();
                         }
 
-                        menu.ShowAsContext();
-                    };
+                        GenericMenu.MenuFunction function = () =>
+                        {
+                            var index = targets.arraySize;
+                            targets.InsertArrayElementAtIndex(index);
+                            var arrayItem = targets.GetArrayElementAtIndex(index);
+                            var renderer = arrayItem.FindPropertyRelative("Renderer");
+                            arrayItem.FindPropertyRelative("CutoutThreshold").floatValue = 0.5f;
+                            renderer.objectReferenceValue = item;
+
+                            serializedObject.ApplyModifiedProperties();
+                        };
+
+                        if (found)
+                            function = null;
+
+                        menu.AddItem(new GUIContent(path), found, function);
+                    }
+
+                    menu.ShowAsContext();
+                };
             }
         }
 

@@ -19,24 +19,24 @@
 
 inline float GetScaler(float4 inUV, half4 info)
 {
-#if USE_INFO_BUFFER
+    #if USE_INFO_BUFFER
 	float2 uv = inUV.xy / inUV.w;
 
 	float scaler = 1.0f;
 
-#if BACK_OBSTACLE_RENDERING
+    #if BACK_OBSTACLE_RENDERING
 	scaler = abs(info.b - 0.25f) < 0.05f;
-#endif
+    #endif
 
-#if BACK_MASKING_RENDERING
+    #if BACK_MASKING_RENDERING
 	scaler = abs(info.b - 0.6f) > 0.05f;
-#endif
+    #endif
 
-#else
-	float scaler = 1.0f;
-#endif
+    #else
+    float scaler = 1.0f;
+    #endif
 
-	return scaler;
+    return scaler;
 }
 
 #define DefineEdgeDilateParameters float3 normal : TEXCOORD6;
@@ -55,10 +55,10 @@ inline float GetScaler(float4 inUV, half4 info)
 
 inline float2 EPOComputeShift(float3 normal, float2 shiftAmount)
 {
-	float2 transformedNormal = mul((float3x3) UNITY_MATRIX_MVP, normal).xy;
-	transformedNormal = normalize(transformedNormal);
+    float2 transformedNormal = mul((float3x3)UNITY_MATRIX_MVP, normal).xy;
+    transformedNormal = normalize(transformedNormal);
 
-	return transformedNormal.xy * shiftAmount;
+    return transformedNormal.xy * shiftAmount;
 }
 
 #if UNITY_UV_STARTS_AT_TOP
@@ -67,7 +67,7 @@ inline float2 EPOComputeShift(float3 normal, float2 shiftAmount)
 #define CheckY;
 #endif
 
-#if defined(UNITY_REVERSED_Z) 
+#if defined(UNITY_REVERSED_Z)
 #define ChangeDepth o.vertex.z += 0.0001f;
 #else
 #define ChangeDepth o.vertex.z -= 0.0001f;
@@ -82,11 +82,11 @@ inline float2 EPOComputeShift(float3 normal, float2 shiftAmount)
 #define ModifyUV //o.uv.y = 1.0f - o.uv.y;
 
 #if USE_CUTOUT
-	#if TEXARRAY_CUTOUT
+#if TEXARRAY_CUTOUT
 	#define DEFINE_CUTOUT UNITY_DECLARE_TEX2DARRAY(_CutoutTexture); half4 _CutoutTexture_ST; half _CutoutThreshold; float _TextureIndex; float4 _CutoutMask;
-	#else
+#else
 	#define DEFINE_CUTOUT sampler2D _CutoutTexture; half4 _CutoutTexture_ST; half _CutoutThreshold; float4 _CutoutMask;
-	#endif
+#endif
 #else
 #define DEFINE_CUTOUT
 #endif

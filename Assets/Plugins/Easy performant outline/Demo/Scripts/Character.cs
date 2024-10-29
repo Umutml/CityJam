@@ -2,20 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+
 #pragma warning disable CS0649
 
 namespace EPOOutline.Demo
 {
     public class Character : MonoBehaviour
     {
-        [SerializeField]
-        private AudioSource walkSource;
+        [SerializeField] private AudioSource walkSource;
 
-        [SerializeField]
-        private NavMeshAgent agent;
+        [SerializeField] private NavMeshAgent agent;
 
-        [SerializeField]
-        private Animator characterAnimator;
+        [SerializeField] private Animator characterAnimator;
 
         private float initialWalkVolume = 0.0f;
 

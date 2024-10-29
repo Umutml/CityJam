@@ -19,7 +19,7 @@ namespace EPOOutline
             }
         }
 
-        private List<Callback> callbacks = new List<Callback>();
+        private List<Callback> callbacks = new();
 
         public void AddCallback(Outlinable outlinable, Action action)
         {
@@ -31,7 +31,7 @@ namespace EPOOutline
             var found = callbacks.FindIndex(x => x.Target == outlinable && x.Action == callback);
             if (found == -1)
                 return;
-            
+
             callbacks.RemoveAt(found);
         }
 

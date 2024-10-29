@@ -6,9 +6,9 @@
 
         Pass
         {
-			Blend One OneMinusSrcAlpha
+            Blend One OneMinusSrcAlpha
 
-            Stencil 
+            Stencil
             {
                 Ref [_Ref]
                 Comp [_Comparison]
@@ -19,8 +19,8 @@
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_instancing
-			#pragma fragmentoption ARB_precision_hint_fastest
-            
+            #pragma fragmentoption ARB_precision_hint_fastest
+
             #include "UnityCG.cginc"
             #include "MiskCG.cginc"
 
@@ -28,7 +28,7 @@
             {
                 float4 vertex : POSITION;
                 half3 normal : NORMAL;
-				DefineTransform
+                DefineTransform
 
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
@@ -40,7 +40,7 @@
 
                 UNITY_VERTEX_OUTPUT_STEREO
             };
-            
+
             half _EffectSize;
 
             UNITY_DECLARE_SCREENSPACE_TEXTURE(_MainTex);
@@ -51,33 +51,33 @@
             half4 _InitialTex_ST;
             half4 _InitialTex_TexelSize;
 
-			DefineCoords
+            DefineCoords
 
-            v2f vert (appdata v)
+            v2f vert(appdata v)
             {
                 v2f o;
 
                 UNITY_SETUP_INSTANCE_ID(v);
-                UNITY_INITIALIZE_OUTPUT(v2f, o);
+                    UNITY_INITIALIZE_OUTPUT(v2f, o);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-				
+
                 o.vertex = UnityObjectToClipPos(v.vertex);
 
-				PostprocessCoords
+                PostprocessCoords
 
-                ComputeScreenShift
-					
-				CheckY
+                    ComputeScreenShift
+
+                CheckY
 
                 o.uv = ComputeScreenPos(o.vertex);
-				
-#if UNITY_UV_STARTS_AT_TOP
-				ModifyUV
-#endif
+
+                #if UNITY_UV_STARTS_AT_TOP
+                ModifyUV
+                #endif
                 return o;
             }
-            
-            half4 frag (v2f i) : SV_Target
+
+            half4 frag(v2f i) : SV_Target
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
 

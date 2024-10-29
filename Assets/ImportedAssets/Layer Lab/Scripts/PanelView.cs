@@ -10,12 +10,12 @@ namespace LayerLab.CasualGame
 
         public void OnEnable()
         {
-            for (int i = 0; i < otherPanels.Length; i++) otherPanels[i].SetActive(true);
+            for (var i = 0; i < otherPanels.Length; i++) otherPanels[i].SetActive(true);
         }
 
         public void OnDisable()
         {
-            for (int i = 0; i < otherPanels.Length; i++) otherPanels[i].SetActive(false);
+            for (var i = 0; i < otherPanels.Length; i++) otherPanels[i].SetActive(false);
         }
     }
 }

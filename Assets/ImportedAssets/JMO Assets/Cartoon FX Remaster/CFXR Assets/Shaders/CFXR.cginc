@@ -24,9 +24,9 @@
 		if (unity_OrthoParams.w == 1)
 		{
 			// orthographic camera
-			#if defined(UNITY_REVERSED_Z)
+#if defined(UNITY_REVERSED_Z)
 				sceneZ = 1.0f - sceneZ;
-			#endif
+#endif
 			sceneZ = (sceneZ * _ProjectionParams.z) + _ProjectionParams.y;
 		}
 		else
@@ -39,37 +39,37 @@
 		return fade;
 	}
 #else
-	float SoftParticles(float near, float far, float4 projection)
-	{
-		float sceneZ = (SAMPLE_DEPTH_TEXTURE_PROJ(_CameraDepthTexture, UNITY_PROJ_COORD(projection)));
-		if (unity_OrthoParams.w == 1)
-		{
-			// orthographic camera
-			#if defined(UNITY_REVERSED_Z)
+float SoftParticles(float near, float far, float4 projection)
+{
+    float sceneZ = (SAMPLE_DEPTH_TEXTURE_PROJ(_CameraDepthTexture, UNITY_PROJ_COORD(projection)));
+    if (unity_OrthoParams.w == 1)
+    {
+        // orthographic camera
+        #if defined(UNITY_REVERSED_Z)
 				sceneZ = 1.0f - sceneZ;
-			#endif
-			sceneZ = (sceneZ * _ProjectionParams.z) + _ProjectionParams.y;
-		}
-		else
-		{
-			// perspective camera
-			sceneZ = LinearEyeDepth(sceneZ);
-		}
+        #endif
+        sceneZ = (sceneZ * _ProjectionParams.z) + _ProjectionParams.y;
+    }
+    else
+    {
+        // perspective camera
+        sceneZ = LinearEyeDepth(sceneZ);
+    }
 
-		float fade = saturate (far * ((sceneZ - near) - projection.z));
-		return fade;
-	}
+    float fade = saturate(far * ((sceneZ - near) - projection.z));
+    return fade;
+}
 #endif
 
-		float LinearToGammaSpaceApprox(float value)
-		{
-			return max(1.055h * pow(value, 0.416666667h) - 0.055h, 0.h);
-		}
-		
-		// Same as UnityStandardUtils.cginc, but without the SHADER_TARGET limitation
-		half3 UnpackScaleNormal_CFXR(half4 packednormal, half bumpScale)
-		{
-			#if defined(UNITY_NO_DXT5nm)
+float LinearToGammaSpaceApprox(float value)
+{
+    return max(1.055h * pow(value, 0.416666667h) - 0.055h, 0.h);
+}
+
+// Same as UnityStandardUtils.cginc, but without the SHADER_TARGET limitation
+half3 UnpackScaleNormal_CFXR(half4 packednormal, half bumpScale)
+{
+    #if defined(UNITY_NO_DXT5nm)
 				half3 normal = packednormal.xyz * 2 - 1;
 				// #if (SHADER_TARGET >= 30)
 					// SM2.0: instruction count limitation
@@ -77,90 +77,90 @@
 					normal.xy *= bumpScale;
 				// #endif
 				return normal;
-			#else
-				// This do the trick
-				packednormal.x *= packednormal.w;
+    #else
+    // This do the trick
+    packednormal.x *= packednormal.w;
 
-				half3 normal;
-				normal.xy = (packednormal.xy * 2 - 1);
-				// #if (SHADER_TARGET >= 30)
-					// SM2.0: instruction count limitation
-					// SM2.0: normal scaler is not supported
-					normal.xy *= bumpScale;
-				// #endif
-				normal.z = sqrt(1.0 - saturate(dot(normal.xy, normal.xy)));
-				return normal;
-			#endif
-		}
+    half3 normal;
+    normal.xy = (packednormal.xy * 2 - 1);
+    // #if (SHADER_TARGET >= 30)
+    // SM2.0: instruction count limitation
+    // SM2.0: normal scaler is not supported
+    normal.xy *= bumpScale;
+    // #endif
+    normal.z = sqrt(1.0 - saturate(dot(normal.xy, normal.xy)));
+    return normal;
+    #endif
+}
 
-		//Macros
+//Macros
 
-		// Project Position
-	#if !defined(PASS_SHADOW_CASTER) && !defined(GLOBAL_DISABLE_SOFT_PARTICLES) && !defined(DISABLE_SOFT_PARTICLES) && ( (defined(SOFTPARTICLES_ON) || defined(CFXR_URP) || defined(SOFT_PARTICLES_ORTHOGRAPHIC)) && defined(_FADING_ON) )
+// Project Position
+#if !defined(PASS_SHADOW_CASTER) && !defined(GLOBAL_DISABLE_SOFT_PARTICLES) && !defined(DISABLE_SOFT_PARTICLES) && ( (defined(SOFTPARTICLES_ON) || defined(CFXR_URP) || defined(SOFT_PARTICLES_ORTHOGRAPHIC)) && defined(_FADING_ON) )
 		#define vertProjPos(o, clipPos) \
 			o.projPos = ComputeScreenPos(clipPos); \
 			COMPUTE_EYEDEPTH(o.projPos.z);
-	#else
-		#define vertProjPos(o, clipPos)
-	#endif
+#else
+#define vertProjPos(o, clipPos)
+#endif
 
-		// Soft Particles
-	#if !defined(PASS_SHADOW_CASTER) && !defined(GLOBAL_DISABLE_SOFT_PARTICLES) && !defined(DISABLE_SOFT_PARTICLES) && ((defined(SOFTPARTICLES_ON) || defined(CFXR_URP) || defined(SOFT_PARTICLES_ORTHOGRAPHIC)) && defined(_FADING_ON))
+// Soft Particles
+#if !defined(PASS_SHADOW_CASTER) && !defined(GLOBAL_DISABLE_SOFT_PARTICLES) && !defined(DISABLE_SOFT_PARTICLES) && ((defined(SOFTPARTICLES_ON) || defined(CFXR_URP) || defined(SOFT_PARTICLES_ORTHOGRAPHIC)) && defined(_FADING_ON))
 		#define fragSoftParticlesFade(i, color) \
 			color *= SoftParticles(_SoftParticlesFadeDistanceNear, _SoftParticlesFadeDistanceFar, i.projPos);
-	#else
-		#define fragSoftParticlesFade(i, color)
-	#endif
+#else
+#define fragSoftParticlesFade(i, color)
+#endif
 
-		// Edge fade (note: particle meshes are already in world space)
-	#if !defined(PASS_SHADOW_CASTER) && defined(_CFXR_EDGE_FADING)
+// Edge fade (note: particle meshes are already in world space)
+#if !defined(PASS_SHADOW_CASTER) && defined(_CFXR_EDGE_FADING)
 		#define vertEdgeFade(v, color) \
 			float3 viewDir = UnityWorldSpaceViewDir(v.vertex); \
 			float ndv = abs(dot(normalize(viewDir), v.normal.xyz)); \
 			color *= saturate(pow(ndv, _EdgeFadePow));
-	#else
-		#define vertEdgeFade(v, color)
-	#endif
+#else
+#define vertEdgeFade(v, color)
+#endif
 
-		// Fog
-	#if _ALPHABLEND_ON
+// Fog
+#if _ALPHABLEND_ON
 		#define applyFog(i, color, alpha)	UNITY_APPLY_FOG_COLOR(i.fogCoord, color, unity_FogColor);
-	#elif _ALPHAPREMULTIPLY_ON
+#elif _ALPHAPREMULTIPLY_ON
 		#define applyFog(i, color, alpha)	UNITY_APPLY_FOG_COLOR(i.fogCoord, color, alpha * unity_FogColor);
-	#elif _CFXR_ADDITIVE
+#elif _CFXR_ADDITIVE
 		#define applyFog(i, color, alpha)	UNITY_APPLY_FOG_COLOR(i.fogCoord, color, half4(0, 0, 0, 0));
-	#elif _ALPHAMODULATE_ON
+#elif _ALPHAMODULATE_ON
 		#define applyFog(i, color, alpha)	UNITY_APPLY_FOG_COLOR(i.fogCoord, color, half4(1, 1, 1, 1));
-	#else
-		#define applyFog(i, color, alpha)	UNITY_APPLY_FOG_COLOR(i.fogCoord, color, unity_FogColor);
-	#endif
+#else
+#define applyFog(i, color, alpha)	UNITY_APPLY_FOG_COLOR(i.fogCoord, color, unity_FogColor);
+#endif
 
-		// Vertex program
-	#if defined(PASS_SHADOW_CASTER)
+// Vertex program
+#if defined(PASS_SHADOW_CASTER)
 		void vert(appdata v, v2f_shadowCaster o, out float4 opos)
-	#else
-		v2f vert(appdata v, v2f o)
-	#endif
-		{
-			UNITY_TRANSFER_FOG(o, o.pos);
-			vertProjPos(o, o.pos);
-			vertEdgeFade(v, o.color.a);
+#else
+v2f vert(appdata v, v2f o)
+#endif
+{
+    UNITY_TRANSFER_FOG(o, o.pos);
+    vertProjPos(o, o.pos);
+    vertEdgeFade(v, o.color.a);
 
-	#if defined(PASS_SHADOW_CASTER)
+    #if defined(PASS_SHADOW_CASTER)
 			TRANSFER_SHADOW_CASTER_NOPOS(o, opos);
-	#else
-			return o;
-	#endif
-		}
+    #else
+    return o;
+    #endif
+}
 
-		// Fragment program
-	#if defined(PASS_SHADOW_CASTER)
+// Fragment program
+#if defined(PASS_SHADOW_CASTER)
 		float4 frag(v2f_shadowCaster i, UNITY_VPOS_TYPE vpos, half3 particleColor, half particleAlpha, half dissolve, half dissolveTime, half doubleDissolveWidth) : SV_Target
-	#else
-		half4 frag(v2f i, half3 particleColor, half particleAlpha, half dissolve, half dissolveTime, half doubleDissolveWidth) : SV_Target
-	#endif
-		{
-		#if _CFXR_DISSOLVE
+#else
+half4 frag(v2f i, half3 particleColor, half particleAlpha, half dissolve, half dissolveTime, half doubleDissolveWidth) : SV_Target
+#endif
+{
+    #if _CFXR_DISSOLVE
 			// Dissolve
 			half time = lerp(-_DissolveSmooth, 1+_DissolveSmooth, dissolveTime);
 			particleAlpha *= smoothstep(dissolve - _DissolveSmooth, dissolve + _DissolveSmooth, time);
@@ -169,72 +169,72 @@
 				half dissolveSubtract = smoothstep(dissolve - _DissolveSmooth, dissolve + _DissolveSmooth, time - doubleDissolveWidth);
 				particleAlpha = saturate(particleAlpha - dissolveSubtract);
 			}
-		#endif
+    #endif
 
-			//Blending
-		#if _ALPHAPREMULTIPLY_ON
+    //Blending
+    #if _ALPHAPREMULTIPLY_ON
 			particleColor *= particleAlpha;
-		#endif
-		#if _ALPHAMODULATE_ON
+    #endif
+    #if _ALPHAMODULATE_ON
 			particleColor.rgb = lerp(float3(1,1,1), particleColor.rgb, particleAlpha);
-		#endif
+    #endif
 
-		#if _ALPHATEST_ON
+    #if _ALPHATEST_ON
 			clip(particleAlpha - _Cutoff);
-		#endif
+    #endif
 
-		#if !defined(PASS_SHADOW_CASTER)
-			// Fog & Soft Particles
-			applyFog(i, particleColor, particleAlpha);
-			fragSoftParticlesFade(i, particleAlpha);
-		#endif
+    #if !defined(PASS_SHADOW_CASTER)
+    // Fog & Soft Particles
+    applyFog(i, particleColor, particleAlpha);
+    fragSoftParticlesFade(i, particleAlpha);
+    #endif
 
-			// Prevent alpha from exceeding 1
-			particleAlpha = min(particleAlpha, 1.0);
+    // Prevent alpha from exceeding 1
+    particleAlpha = min(particleAlpha, 1.0);
 
-		#if !defined(PASS_SHADOW_CASTER)
-			return float4(particleColor, particleAlpha);
-		#else
+    #if !defined(PASS_SHADOW_CASTER)
+    return float4(particleColor, particleAlpha);
+    #else
 
-			//--------------------------------------------------------------------------------------------------------------------------------
-			// Shadow Caster Pass
+    //--------------------------------------------------------------------------------------------------------------------------------
+    // Shadow Caster Pass
 
-		#if _CFXR_ADDITIVE
+    #if _CFXR_ADDITIVE
 			half alpha = max(particleColor.r, max(particleColor.g, particleColor.b)) * particleAlpha;
-		#else
+    #else
 			half alpha = particleAlpha;
-		#endif
+    #endif
 
-		#if (_CFXR_DITHERED_SHADOWS_ON || _CFXR_DITHERED_SHADOWS_CUSTOMTEXTURE) && !defined(SHADER_API_GLES)
+    #if (_CFXR_DITHERED_SHADOWS_ON || _CFXR_DITHERED_SHADOWS_CUSTOMTEXTURE) && !defined(SHADER_API_GLES)
 			alpha = min(alpha, _ShadowStrength);
 			// Use dither mask for alpha blended shadows, based on pixel position xy
 			// and alpha level. Our dither texture is 4x4x16.
-			#if _CFXR_DITHERED_SHADOWS_CUSTOMTEXTURE
+    #if _CFXR_DITHERED_SHADOWS_CUSTOMTEXTURE
 			half texSize = _DitherCustom_TexelSize.z;
 			alpha = tex3D(_DitherCustom, float3(vpos.xy*(1 / texSize), alpha*(1 - (1 / (texSize*texSize))))).a;
-			#else
+    #else
 			alpha = tex3D(_DitherMaskLOD, float3(vpos.xy*0.25, alpha*0.9375)).a;
-			#endif
-		#endif
+    #endif
+    #endif
 			clip(alpha - 0.01);
 			SHADOW_CASTER_FRAGMENT(i)
-		#endif
-		}
+    #endif
+}
 
-	// ================================================================================================================================
-	// ParticlesInstancing.hlsl
-	// ================================================================================================================================
+// ================================================================================================================================
+// ParticlesInstancing.hlsl
+// ================================================================================================================================
 
 #if defined(CFXR_URP)
-	#if defined(UNITY_PROCEDURAL_INSTANCING_ENABLED) && !defined(SHADER_TARGET_SURFACE_ANALYSIS)
+#if defined(UNITY_PROCEDURAL_INSTANCING_ENABLED) && !defined(SHADER_TARGET_SURFACE_ANALYSIS)
 		#define UNITY_PARTICLE_INSTANCING_ENABLED
-	#endif
+#endif
 
-	#if defined(UNITY_PARTICLE_INSTANCING_ENABLED)
+#if defined(UNITY_PARTICLE_INSTANCING_ENABLED)
 
-		#ifndef UNITY_PARTICLE_INSTANCE_DATA
+#ifndef UNITY_PARTICLE_INSTANCE_DATA
 			#define UNITY_PARTICLE_INSTANCE_DATA DefaultParticleInstanceData
-		#endif
+#endif
 
 		struct DefaultParticleInstanceData
 		{
@@ -282,48 +282,48 @@
 			ParticleInstancingMatrices(unity_ObjectToWorld, unity_WorldToObject);
 		}
 
-	#else
+#else
 
 		void ParticleInstancingSetup() {}
 
-	#endif
+#endif
 #endif
 
-	// ================================================================================================================================
-	// Instancing functions
-	// ================================================================================================================================
+// ================================================================================================================================
+// Instancing functions
+// ================================================================================================================================
 
-	float4 UnpackFromR8G8B8A8(uint rgba)
-	{
-		return float4(rgba & 255, (rgba >> 8) & 255, (rgba >> 16) & 255, (rgba >> 24) & 255) * (1.0 / 255);
-	}
+float4 UnpackFromR8G8B8A8(uint rgba)
+{
+    return float4(rgba & 255, (rgba >> 8) & 255, (rgba >> 16) & 255, (rgba >> 24) & 255) * (1.0 / 255);
+}
 
-	half4 GetParticleColor(half4 color)
-	{
-		#if defined(UNITY_PARTICLE_INSTANCING_ENABLED)
-			#if !defined(UNITY_PARTICLE_INSTANCE_DATA_NO_COLOR)
+half4 GetParticleColor(half4 color)
+{
+    #if defined(UNITY_PARTICLE_INSTANCING_ENABLED)
+    #if !defined(UNITY_PARTICLE_INSTANCE_DATA_NO_COLOR)
 				UNITY_PARTICLE_INSTANCE_DATA data = unity_ParticleInstanceData[unity_InstanceID];
 				color = lerp(half4(1.0, 1.0, 1.0, 1.0), color, unity_ParticleUseMeshColors);
 				color *= UnpackFromR8G8B8A8(data.color);
-			#endif
-		#endif
-		return color;
-	}
+    #endif
+    #endif
+    return color;
+}
 
-	void GetParticleTexcoords(out float2 outputTexcoord, out float2 outputTexcoord2, inout float outputBlend, in float4 inputTexcoords, in float inputBlend)
-	{
-		#if defined(UNITY_PARTICLE_INSTANCING_ENABLED)
+void GetParticleTexcoords(out float2 outputTexcoord, out float2 outputTexcoord2, inout float outputBlend, in float4 inputTexcoords, in float inputBlend)
+{
+    #if defined(UNITY_PARTICLE_INSTANCING_ENABLED)
 			if (unity_ParticleUVShiftData.x != 0.0)
 			{
 				UNITY_PARTICLE_INSTANCE_DATA data = unity_ParticleInstanceData[unity_InstanceID];
 
 				float numTilesX = unity_ParticleUVShiftData.y;
 				float2 animScale = unity_ParticleUVShiftData.zw;
-				#ifdef UNITY_PARTICLE_INSTANCE_DATA_NO_ANIM_FRAME
+    #ifdef UNITY_PARTICLE_INSTANCE_DATA_NO_ANIM_FRAME
 					float sheetIndex = 0.0;
-				#else
+    #else
 					float sheetIndex = data.animFrame;
-				#endif
+    #endif
 
 				float index0 = floor(sheetIndex);
 				float vIdx0 = floor(index0 / numTilesX);
@@ -332,7 +332,7 @@
 
 				outputTexcoord = inputTexcoords.xy * animScale.xy + offset0.xy;
 
-				#ifdef _FLIPBOOKBLENDING_ON
+    #ifdef _FLIPBOOKBLENDING_ON
 					float index1 = floor(sheetIndex + 1.0);
 					float vIdx1 = floor(index1 / numTilesX);
 					float uIdx1 = floor(index1 - vIdx1 * numTilesX);
@@ -340,27 +340,27 @@
 
 					outputTexcoord2.xy = inputTexcoords.xy * animScale.xy + offset1.xy;
 					outputBlend = frac(sheetIndex);
-				#endif
+    #endif
 			}
 			else
-		#endif
-			{
-				outputTexcoord = inputTexcoords.xy;
-				#ifdef _FLIPBOOKBLENDING_ON
+    #endif
+    {
+        outputTexcoord = inputTexcoords.xy;
+        #ifdef _FLIPBOOKBLENDING_ON
 					outputTexcoord2.xy = inputTexcoords.zw;
 					outputBlend = inputBlend;
-				#endif
-			}
+        #endif
+    }
 
-		#ifndef _FLIPBOOKBLENDING_ON
-			outputTexcoord2.xy = inputTexcoords.xy;
-			//outputBlend = 0.5;
-		#endif
-	}
+    #ifndef _FLIPBOOKBLENDING_ON
+    outputTexcoord2.xy = inputTexcoords.xy;
+    //outputBlend = 0.5;
+    #endif
+}
 
-	void GetParticleTexcoords(out float2 outputTexcoord, in float2 inputTexcoord)
-	{
-		float2 dummyTexcoord2 = 0.0;
-		float dummyBlend = 0.0;
-		GetParticleTexcoords(outputTexcoord, dummyTexcoord2, dummyBlend, inputTexcoord.xyxy, 0.0);
-	}
+void GetParticleTexcoords(out float2 outputTexcoord, in float2 inputTexcoord)
+{
+    float2 dummyTexcoord2 = 0.0;
+    float dummyBlend = 0.0;
+    GetParticleTexcoords(outputTexcoord, dummyTexcoord2, dummyBlend, inputTexcoord.xyxy, 0.0);
+}

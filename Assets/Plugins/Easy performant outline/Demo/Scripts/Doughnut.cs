@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 #pragma warning disable CS0649
 #pragma warning disable CS0414
 
@@ -8,17 +9,13 @@ namespace EPOOutline.Demo
 {
     public class Doughnut : MonoBehaviour, ICollectable
     {
-        [SerializeField]
-        private float rotationSpeed = 30.0f;
+        [SerializeField] private float rotationSpeed = 30.0f;
 
-        [SerializeField]
-        private AudioClip eatSound;
+        [SerializeField] private AudioClip eatSound;
 
-        [SerializeField]
-        private float moveAmplitude = 0.25f;
+        [SerializeField] private float moveAmplitude = 0.25f;
 
-        [SerializeField]
-        private float moveSpeed = 0.2f;
+        [SerializeField] private float moveSpeed = 0.2f;
 
         private Outlinable outlinable;
 
@@ -85,7 +82,7 @@ namespace EPOOutline.Demo
             {
                 timeLeft -= Time.smoothDeltaTime;
 
-                transform.localScale = Vector3.Lerp(initialScale, Vector3.zero, 1.0f - (timeLeft / duration));
+                transform.localScale = Vector3.Lerp(initialScale, Vector3.zero, 1.0f - timeLeft / duration);
 
                 yield return null;
             }

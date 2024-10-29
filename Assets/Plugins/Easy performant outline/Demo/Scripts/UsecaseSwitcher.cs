@@ -13,7 +13,7 @@ public class UsecaseSwitcher : MonoBehaviour
 
         currentSelected = transform.GetChild(0);
     }
-    
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.RightArrow))

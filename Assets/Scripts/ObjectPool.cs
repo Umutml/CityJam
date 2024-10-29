@@ -22,7 +22,7 @@ public class ObjectPool : MonoBehaviour
         // Pre instantiate initialSize number of objects
         for (var i = 0; i < initialSize; i++)
         {
-            var obj = Instantiate(prefab,this.transform);
+            var obj = Instantiate(prefab, transform);
             obj.SetActive(false);
             _pool.Push(obj);
         }
@@ -38,7 +38,7 @@ public class ObjectPool : MonoBehaviour
         }
 
         // If the pool is empty, instantiate a new object
-        return Instantiate(elementPrefab, this.transform);
+        return Instantiate(elementPrefab, transform);
     }
 
     public void Return(GameObject obj)

@@ -6,7 +6,7 @@
 
         Pass
         {
-            Stencil 
+            Stencil
             {
                 Ref [_Ref]
                 Comp [_Comparison]
@@ -19,7 +19,7 @@
             #pragma multi_compile_instancing
             #pragma multi_compile ANISOTROPIC_BLUR BOX_BLUR GAUSSIAN5X5 GAUSSIAN9X9 GAUSSIAN13X13
             #pragma multi_compile __ USE_INFO_BUFFER
-			#pragma fragmentoption ARB_precision_hint_fastest
+            #pragma fragmentoption ARB_precision_hint_fastest
 
             #include "UnityCG.cginc"
             #include "MiskCG.cginc"
@@ -28,7 +28,7 @@
             {
                 float4 vertex : POSITION;
                 half3 normal : NORMAL;
-				DefineTransform
+                DefineTransform
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
@@ -39,73 +39,73 @@
 
                 UNITY_VERTEX_OUTPUT_STEREO
             };
-            
+
             half _EffectSize;
 
             UNITY_DECLARE_SCREENSPACE_TEXTURE(_MainTex);
             half4 _MainTex_ST;
             half4 _MainTex_TexelSize;
             half2 _Shift;
-            
-#if USE_INFO_BUFFER
+
+            #if USE_INFO_BUFFER
             UNITY_DECLARE_SCREENSPACE_TEXTURE(_InfoBuffer);
             half4 _InfoBuffer_ST;
             half4 _InfoBuffer_TexelSize;
-#endif
+            #endif
 
-			DefineCoords
+            DefineCoords
 
-            v2f vert (appdata v)
+            v2f vert(appdata v)
             {
                 v2f o;
 
                 UNITY_SETUP_INSTANCE_ID(v);
-                UNITY_INITIALIZE_OUTPUT(v2f, o);
+                    UNITY_INITIALIZE_OUTPUT(v2f, o);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-                
+
                 o.vertex = UnityObjectToClipPos(v.vertex);
 
-				PostprocessCoords
+                PostprocessCoords
 
                 ComputeScreenShift
 
                 o.uv = ComputeScreenPos(o.vertex);
-				o.uv.xy *= _Scale;
+                o.uv.xy *= _Scale;
 
-				CheckY
+                CheckY
 
-#if UNITY_UV_STARTS_AT_TOP
-				ModifyUV
-#endif
+                #if UNITY_UV_STARTS_AT_TOP
+                ModifyUV
+                #endif
 
                 return o;
             }
 
-			float _Ref;
+            float _Ref;
 
-            half4 frag (v2f i) : SV_Target
+            half4 frag(v2f i) : SV_Target
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
-			
+
                 half2 targetShift = _Shift * _MainTex_TexelSize.xy;
 
-                half2 uv = i.uv.xy/i.uv.w;
+                half2 uv = i.uv.xy / i.uv.w;
 
-#if USE_INFO_BUFFER
+                #if USE_INFO_BUFFER
                 half4 info = FetchTexelAtFrom(_InfoBuffer, uv, _InfoBuffer_ST);
                 targetShift *= info.g;
-#endif
+                #endif
 
-#if BOX_BLUR || ANISOTROPIC_BLUR
+                #if BOX_BLUR || ANISOTROPIC_BLUR
                 half4 first = FetchTexelAtWithShift(uv, targetShift);
                 half4 second = FetchTexelAtWithShift(uv, -targetShift);
-                half4 center = FetchTexelAt(uv);    
+                half4 center = FetchTexelAt(uv);
                 half4 result = (first + second + center) * 0.333333333333f;
 
                 return result;
-#endif
+                #endif
 
-#if GAUSSIAN5X5
+                #if GAUSSIAN5X5
                 half4 result = half4(0, 0, 0, 0);
                 half2 off = targetShift *  1.3333333333333333;
                 result += FetchTexel(uv) * 0.29411764705882354;
@@ -113,9 +113,9 @@
                 result += FetchTexelAtWithShift(uv, -off) * 0.35294117647058826;
 
 				return result;
-#endif
+                #endif
 
-#if GAUSSIAN9X9
+                #if GAUSSIAN9X9
                 half4 result = float4(0, 0, 0, 0);
                 half2 off1 = 1.3846153846 * targetShift;
                 half2 off2 = 3.2307692308 * targetShift;
@@ -126,9 +126,9 @@
                 result += FetchTexelAtWithShift(uv, -off2) * 0.0702702703;
 
                 return result;
-#endif
+                #endif
 
-#if GAUSSIAN13X13
+                #if GAUSSIAN13X13
                 half4 result = float4(0, 0, 0, 0);
                 half2 off1 = 1.411764705882353 * targetShift;
                 half2 off2 = 3.2941176470588234 * targetShift;
@@ -143,7 +143,7 @@
                 result += FetchTexelAtWithShift(uv, -off3) * 0.010381362401148057;
 
                 return result;
-#endif
+                #endif
 
                 return half4(0, 0, 0, 0);
             }

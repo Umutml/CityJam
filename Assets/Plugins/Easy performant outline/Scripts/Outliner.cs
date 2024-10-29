@@ -48,280 +48,164 @@ namespace EPOOutline
 #if UNITY_EDITOR
         private static GameObject lastSelectedOutliner;
 
-        private static List<Outliner> outliners = new List<Outliner>();
+        private static List<Outliner> outliners = new();
 #endif
 
-        private static List<Outlinable> temporaryOutlinables = new List<Outlinable>(); 
+        private static List<Outlinable> temporaryOutlinables = new();
 
-        private OutlineParameters parameters = new OutlineParameters();
+        private OutlineParameters parameters = new();
 
 #if UNITY_EDITOR
-        private OutlineParameters editorPreviewParameters = new OutlineParameters();
+        private OutlineParameters editorPreviewParameters = new();
 #endif
 
         private Camera targetCamera;
 
-        [SerializeField]
-        private RenderStage stage = RenderStage.AfterTransparents;
+        [SerializeField] private RenderStage stage = RenderStage.AfterTransparents;
 
-        [SerializeField]
-        private OutlineRenderingStrategy renderingStrategy = OutlineRenderingStrategy.Default;
+        [SerializeField] private OutlineRenderingStrategy renderingStrategy = OutlineRenderingStrategy.Default;
 
-        [SerializeField]
-        private RenderingMode renderingMode;
+        [SerializeField] private RenderingMode renderingMode;
 
-        [SerializeField]
-        private long outlineLayerMask = -1;
+        [SerializeField] private long outlineLayerMask = -1;
 
-        [SerializeField]
-        private BufferSizeMode primaryBufferSizeMode;
+        [SerializeField] private BufferSizeMode primaryBufferSizeMode;
 
-        [SerializeField]
-        [Range(0.15f, 1.0f)]
-        private float primaryRendererScale = 0.75f;
+        [SerializeField] [Range(0.15f, 1.0f)] private float primaryRendererScale = 0.75f;
 
-        [SerializeField]
-        private int primarySizeReference = 800;
+        [SerializeField] private int primarySizeReference = 800;
 
-        [SerializeField]
-        [Range(0.0f, 2.0f)]
-        private float blurShift = 1.0f;
+        [SerializeField] [Range(0.0f, 2.0f)] private float blurShift = 1.0f;
 
-        [SerializeField]
-        [Range(0.0f, 2.0f)]
-        private float dilateShift = 1.0f;
+        [SerializeField] [Range(0.0f, 2.0f)] private float dilateShift = 1.0f;
 
         [SerializeField]
         [FormerlySerializedAs("dilateIterrations")]
         private int dilateIterations = 1;
 
-        [SerializeField]
-        private DilateQuality dilateQuality;
+        [SerializeField] private DilateQuality dilateQuality;
 
         [SerializeField]
         [FormerlySerializedAs("blurIterrations")]
         private int blurIterations = 1;
 
-        [SerializeField]
-        private BlurType blurType = BlurType.Box;
+        [SerializeField] private BlurType blurType = BlurType.Box;
 
         [Obsolete]
         public float InfoRendererScale
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get => throw new NotImplementedException();
 
-            set
-            {
-                throw new NotImplementedException();
-            }
+            set => throw new NotImplementedException();
         }
-        
+
         public int PrimarySizeReference
         {
-            get
-            {
-                return primarySizeReference;
-            }
+            get => primarySizeReference;
 
-            set
-            {
-                primarySizeReference = value;
-            }
+            set => primarySizeReference = value;
         }
 
         public BufferSizeMode PrimaryBufferSizeMode
         {
-            get
-            {
-                return primaryBufferSizeMode;
-            }
+            get => primaryBufferSizeMode;
 
-            set
-            {
-                primaryBufferSizeMode = value;
-            }
+            set => primaryBufferSizeMode = value;
         }
 
-        private CameraEvent Event
-        {
-            get
-            {
-                return stage == RenderStage.BeforeTransparents ? CameraEvent.AfterForwardOpaque : CameraEvent.BeforeImageEffects;
-            }
-        }
+        private CameraEvent Event => stage == RenderStage.BeforeTransparents ? CameraEvent.AfterForwardOpaque : CameraEvent.BeforeImageEffects;
 
         public OutlineRenderingStrategy RenderingStrategy
         {
-            get
-            {
-                return renderingStrategy;
-            }
+            get => renderingStrategy;
 
-            set
-            {
-                renderingStrategy = value;
-            }
+            set => renderingStrategy = value;
         }
 
         public RenderStage RenderStage
         {
-            get
-            {
-                return stage;
-            }
+            get => stage;
 
-            set
-            {
-                stage = value;
-            }
+            set => stage = value;
         }
 
         public DilateQuality DilateQuality
         {
-            get
-            {
-                return dilateQuality;
-            }
+            get => dilateQuality;
 
-            set
-            {
-                dilateQuality = value;
-            }
+            set => dilateQuality = value;
         }
 
         private RenderingMode RenderingMode
         {
-            get
-            {
-                return renderingMode;
-            }
+            get => renderingMode;
 
-            set
-            {
-                renderingMode = value;
-            }
+            set => renderingMode = value;
         }
 
         public float BlurShift
         {
-            get
-            {
-                return blurShift;
-            }
+            get => blurShift;
 
-            set
-            {
-                blurShift = Mathf.Clamp(value, 0, 2.0f);
-            }
+            set => blurShift = Mathf.Clamp(value, 0, 2.0f);
         }
 
         public float DilateShift
         {
-            get
-            {
-                return dilateShift;
-            }
+            get => dilateShift;
 
-            set
-            {
-                dilateShift = Mathf.Clamp(value, 0, 2.0f);
-            }
+            set => dilateShift = Mathf.Clamp(value, 0, 2.0f);
         }
 
         public long OutlineLayerMask
         {
-            get
-            {
-                return outlineLayerMask;
-            }
+            get => outlineLayerMask;
 
-            set
-            {
-                outlineLayerMask = value;
-            }
+            set => outlineLayerMask = value;
         }
 
         public float PrimaryRendererScale
         {
-            get
-            {
-                return primaryRendererScale;
-            }
+            get => primaryRendererScale;
 
-            set
-            {
-                primaryRendererScale = Mathf.Clamp01(value);
-            }
+            set => primaryRendererScale = Mathf.Clamp01(value);
         }
 
         [Obsolete("Fixed incorrect spelling. Use BlurIterations instead")]
         public int BlurIterrations
         {
-            get
-            {
-                return BlurIterations;
-            }
+            get => BlurIterations;
 
-            set
-            {
-                BlurIterations = value;
-            }
+            set => BlurIterations = value;
         }
 
         public int BlurIterations
         {
-            get
-            {
-                return blurIterations;
-            }
+            get => blurIterations;
 
-            set
-            {
-                blurIterations = value > 0 ? value : 0;
-            }
+            set => blurIterations = value > 0 ? value : 0;
         }
 
         public BlurType BlurType
         {
-            get
-            {
-                return blurType;
-            }
+            get => blurType;
 
-            set
-            {
-                blurType = value;
-            }
+            set => blurType = value;
         }
 
         [Obsolete("Fixed incorrect spelling. Use DilateIterations instead")]
         public int DilateIterration
         {
-            get
-            {
-                return DilateIterations;
-            }
+            get => DilateIterations;
 
-            set
-            {
-                DilateIterations = value;
-            }
+            set => DilateIterations = value;
         }
 
         public int DilateIterations
         {
-            get
-            {
-                return dilateIterations;
-            }
+            get => dilateIterations;
 
-            set
-            {
-                dilateIterations = value > 0 ? value : 0;
-            }
+            set => dilateIterations = value > 0 ? value : 0;
         }
 
         private void OnValidate()
@@ -357,12 +241,12 @@ namespace EPOOutline
         private void OnDestroy()
         {
 #if UNITY_EDITOR
-            GameObject.DestroyImmediate(editorPreviewParameters.BlitMesh);
+            DestroyImmediate(editorPreviewParameters.BlitMesh);
             if (editorPreviewParameters.Buffer != null)
                 editorPreviewParameters.Buffer.Dispose();
 #endif
 
-            GameObject.DestroyImmediate(parameters.BlitMesh);
+            DestroyImmediate(parameters.BlitMesh);
 
             if (parameters.Buffer != null)
                 parameters.Buffer.Dispose();
@@ -512,7 +396,7 @@ namespace EPOOutline
             parameters.DilateIterations = dilateIterations;
             parameters.BlurShift = blurShift;
             parameters.DilateShift = dilateShift;
-            parameters.UseHDR = camera.allowHDR && (RenderingMode == RenderingMode.HDR);
+            parameters.UseHDR = camera.allowHDR && RenderingMode == RenderingMode.HDR;
             parameters.EyeMask = camera.stereoTargetEye;
 
             parameters.OutlineLayerMask = outlineLayerMask;
@@ -540,7 +424,7 @@ namespace EPOOutline
                 parameters.TargetHeight = targetTexture != null ? targetTexture.height : camera.scaledPixelHeight;
             }
 
-            parameters.Antialiasing = editorCamera ? (targetTexture == null ? 1 : targetTexture.antiAliasing) : CameraUtility.GetMSAA(targetCamera);
+            parameters.Antialiasing = editorCamera ? targetTexture == null ? 1 : targetTexture.antiAliasing : CameraUtility.GetMSAA(targetCamera);
 
             parameters.Target = RenderTargetUtility.ComposeTarget(parameters, BuiltinRenderTextureType.CameraTarget);
 

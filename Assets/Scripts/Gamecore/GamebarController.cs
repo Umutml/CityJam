@@ -21,7 +21,7 @@ namespace Gamecore
 
         [SerializeField] private Camera uiCamera;
         [SerializeField] private Object destroyParticleFX;
-        
+
         public static Action OnCollectableDestroyed;
 
         private void Awake()
@@ -50,7 +50,7 @@ namespace Gamecore
             if (collecteds.Count < 3)
                 return;
 
-            for (int i = 0; i < collecteds.Count; i++)
+            for (var i = 0; i < collecteds.Count; i++)
             {
                 var collectableType = collecteds[i].GetCollectableType();
                 var sameTypeCollectables = collecteds.Where(collectable => collectable.GetCollectableType() == collectableType).ToList();
@@ -71,14 +71,14 @@ namespace Gamecore
                         slot.ClearOccupyingObject();
                         slot.SetOccupied(false);
                     }
-                    
+
                     PlayDestroyFX(calculatedCenteredPosition, _destroyAnimationDuration);
                     OnCollectableDestroyed?.Invoke();
                     break;
                 }
             }
         }
-        
+
         private void ResetBarSlots()
         {
             foreach (var slot in gamebarSlots)
@@ -87,10 +87,10 @@ namespace Gamecore
                 slot.SetOccupied(false);
             }
         }
-        
+
         private async void PlayDestroyFX(Vector3 position, float duration = 1.5f)
         {
-            await Task.Delay((int) (duration * 1000));
+            await Task.Delay((int)(duration * 1000));
             var particle = Instantiate(destroyParticleFX, position, Quaternion.identity);
             Destroy(particle, duration);
         }
@@ -137,17 +137,17 @@ namespace Gamecore
 
         private void ShiftCollectablesLeft()
         {
-            for (int i = 0; i < gamebarSlots.Length - 1; i++)
+            for (var i = 0; i < gamebarSlots.Length - 1; i++)
             {
                 if (!gamebarSlots[i].IsOccupied)
                 {
-                    for (int j = i + 1; j < gamebarSlots.Length; j++)
+                    for (var j = i + 1; j < gamebarSlots.Length; j++)
                     {
                         if (gamebarSlots[j].IsOccupied && !gamebarSlots[j].IsAnimating())
                         {
                             var collectable = gamebarSlots[j].GetOccupyingObject().GetComponent<Collectable>();
                             DoJumpCollectableToSlot(collectable, gamebarSlots[i]);
-                        
+
                             gamebarSlots[i].SetOccupyingObject(collectable.gameObject);
                             gamebarSlots[i].SetOccupied(true);
 
@@ -159,7 +159,7 @@ namespace Gamecore
                 }
             }
         }
-    
+
         private void DoJumpCollectableToSlot(Collectable collectable, GamebarSlot slot)
         {
             Vector3 screenPosition = RectTransformUtility.WorldToScreenPoint(uiCamera, slot.transform.position);
@@ -167,7 +167,7 @@ namespace Gamecore
             var worldPosition = uiCamera.ScreenToWorldPoint(new Vector3(screenPosition.x, centeredY, uiCamera.nearClipPlane + slotZAxisDiff));
 
             slot.SetAnimating(true);
-            collectable.transform.DOJump(worldPosition,1,1, _JumpAnimationDuration).SetEase(Ease.InOutSine).OnComplete(() =>
+            collectable.transform.DOJump(worldPosition, 1, 1, _JumpAnimationDuration).SetEase(Ease.InOutSine).OnComplete(() =>
             {
                 collectable.Highlight(false);
                 collectable.Bounce();
@@ -175,7 +175,7 @@ namespace Gamecore
                 slot.SetAnimating(false);
             });
         }
-        
+
         private void OnDestroy()
         {
             LevelManager.OnLevelLoaded -= ResetBarSlots;

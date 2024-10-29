@@ -11,14 +11,11 @@ namespace EPOOutline.Demo
 {
     public class Chicken : MonoBehaviour
     {
-        [SerializeField]
-        private bool alwaysActive = false;
+        [SerializeField] private bool alwaysActive = false;
 
-        [SerializeField]
-        private bool updateChicken = true;
+        [SerializeField] private bool updateChicken = true;
 
-        [SerializeField]
-        private float searchRadius = 5.0f;
+        [SerializeField] private float searchRadius = 5.0f;
 
         private Outlinable outlinable;
 
@@ -36,7 +33,7 @@ namespace EPOOutline.Demo
             outlinable = GetComponent<Outlinable>();
             animator = GetComponent<Animator>();
             if (!alwaysActive)
-            { 
+            {
 #if EPO_DOTWEEN
                 outlinable.FrontParameters.DOFade(0.0f, 0.0f);
                 outlinable.BackParameters.FillPass.DOFade("_PublicColor", 0.0f, 0.0f);
@@ -119,7 +116,7 @@ namespace EPOOutline.Demo
                 while (agent.pathStatus != NavMeshPathStatus.PathComplete)
                     yield return null;
 
-                var timeToWait = (agent.remainingDistance / agent.speed) * 1.5f;
+                var timeToWait = agent.remainingDistance / agent.speed * 1.5f;
                 while (agent.remainingDistance > agent.stoppingDistance && timeToWait > 0.0f)
                 {
                     timeToWait -= Time.deltaTime;

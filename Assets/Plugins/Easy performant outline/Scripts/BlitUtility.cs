@@ -13,35 +13,35 @@ namespace EPOOutline
         private static readonly int MainTexHash = Shader.PropertyToID("_MainTex");
 
         private static Vector4[] normals = new Vector4[]
-            {
-                new Vector4(-0.578f, -0.578f, -0.578f),
-                new Vector4(0.578f, -0.578f, -0.578f),
-                new Vector4(0.578f, 0.578f, -0.578f),
-                new Vector4(-0.578f, 0.578f, -0.578f),
-                new Vector4(-0.578f, 0.578f, 0.578f),
-                new Vector4(0.578f, 0.578f, 0.578f),
-                new Vector4(0.578f, -0.578f, 0.578f),
-                new Vector4(-0.578f, -0.578f, 0.578f)
-            };
+        {
+            new(-0.578f, -0.578f, -0.578f),
+            new(0.578f, -0.578f, -0.578f),
+            new(0.578f, 0.578f, -0.578f),
+            new(-0.578f, 0.578f, -0.578f),
+            new(-0.578f, 0.578f, 0.578f),
+            new(0.578f, 0.578f, 0.578f),
+            new(0.578f, -0.578f, 0.578f),
+            new(-0.578f, -0.578f, 0.578f)
+        };
 
         private static Vector4[] tempVertecies =
-            {
-                new Vector4(-0.5f, -0.5f, -0.5f, 1),
-                new Vector4(0.5f, -0.5f, -0.5f, 1),
-                new Vector4(0.5f, 0.5f, -0.5f, 1),
-                new Vector4(-0.5f, 0.5f, -0.5f, 1),
-                new Vector4(-0.5f, 0.5f, 0.5f, 1),
-                new Vector4(0.5f, 0.5f, 0.5f, 1),
-                new Vector4(0.5f, -0.5f, 0.5f, 1),
-                new Vector4(-0.5f, -0.5f, 0.5f, 1)
-            };
+        {
+            new(-0.5f, -0.5f, -0.5f, 1),
+            new(0.5f, -0.5f, -0.5f, 1),
+            new(0.5f, 0.5f, -0.5f, 1),
+            new(-0.5f, 0.5f, -0.5f, 1),
+            new(-0.5f, 0.5f, 0.5f, 1),
+            new(0.5f, 0.5f, 0.5f, 1),
+            new(0.5f, -0.5f, 0.5f, 1),
+            new(-0.5f, -0.5f, 0.5f, 1)
+        };
 
         private static VertexAttributeDescriptor[] vertexParams =
-                new VertexAttributeDescriptor[]
-                    {
-                        new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 4),
-                        new VertexAttributeDescriptor(VertexAttribute.Normal, VertexAttributeFormat.Float32)
-                    };
+            new VertexAttributeDescriptor[]
+            {
+                new(VertexAttribute.Position, VertexAttributeFormat.Float32, 4),
+                new(VertexAttribute.Normal, VertexAttributeFormat.Float32)
+            };
 
         public struct MeshSetupResult
         {
@@ -103,16 +103,14 @@ namespace EPOOutline
             if (parameters.BlitMesh == null)
                 parameters.BlitMesh = parameters.MeshPool.AllocateMesh();
 
-            var result = SupportsInstancing ? 
-                             SetupForInstancing(parameters) :
-                             SetupForBruteForce(parameters);
+            var result = SupportsInstancing ? SetupForInstancing(parameters) : SetupForBruteForce(parameters);
 
             if (!result.HasValue)
                 return;
 
             const MeshUpdateFlags flags = MeshUpdateFlags.DontNotifyMeshUsers | MeshUpdateFlags.DontRecalculateBounds | MeshUpdateFlags.DontResetBoneBounds | MeshUpdateFlags.DontValidateIndices;
-            
-            parameters.BlitMesh.SetVertexBufferParams(result.Value.VertexIndex, attributes: vertexParams);
+
+            parameters.BlitMesh.SetVertexBufferParams(result.Value.VertexIndex, vertexParams);
             parameters.BlitMesh.SetVertexBufferData(vertices, 0, 0, result.Value.VertexIndex, 0, flags);
             parameters.BlitMesh.SetIndexBufferParams(result.Value.TriangleIndex, IndexFormat.UInt16);
             parameters.BlitMesh.SetIndexBufferData(indecies, 0, 0, result.Value.TriangleIndex, flags);
@@ -184,10 +182,10 @@ namespace EPOOutline
             for (var index = 0; index < 8; index++)
             {
                 vertices[currentIndex++] = new Vertex()
-                                           {
-                                               Position = tempVertecies[index],
-                                               Normal = normals[index]
-                                           };
+                {
+                    Position = tempVertecies[index],
+                    Normal = normals[index]
+                };
             }
 
             result = new MeshSetupResult(currentIndex, triangleIndex);
@@ -225,7 +223,7 @@ namespace EPOOutline
                         var index = (meshRenderer == null ? 0 : meshRenderer.subMeshStartIndex) + target.SubmeshIndex;
                         var filter = meshRenderer == null ? null : meshRenderer.GetComponent<MeshFilter>();
                         var mesh = filter == null ? null : filter.sharedMesh;
-                        
+
                         if (mesh != null && mesh.subMeshCount > index)
                         {
                             bounds = mesh.GetSubMesh(index).bounds;
@@ -239,7 +237,9 @@ namespace EPOOutline
                     }
 
                     if (pretransformedBounds)
+                    {
                         matrices[itemIndex++] = Matrix4x4.TRS(bounds.center, Quaternion.identity, bounds.size);
+                    }
                     else
                     {
                         var targetTransform = target.renderer.transform;
@@ -304,7 +304,9 @@ namespace EPOOutline
                         var mesh = filter == null ? null : filter.sharedMesh;
 
                         if (mesh != null && mesh.subMeshCount > index)
+                        {
                             bounds = mesh.GetSubMesh(index).bounds;
+                        }
                         else
                         {
                             pretransformedBounds = true;
@@ -381,10 +383,10 @@ namespace EPOOutline
                         var scaledVert = new Vector4(vert.x * boundsSize.x, vert.y * boundsSize.y, vert.z * boundsSize.z, 1);
 
                         var vertex = new Vertex()
-                                     {
-                                         Position = transformMatrix * (boundsCenter + scaledVert),
-                                         Normal = normal
-                                     };
+                        {
+                            Position = transformMatrix * (boundsCenter + scaledVert),
+                            Normal = normal
+                        };
 
                         vertices[currentIndex++] = vertex;
                     }
@@ -394,7 +396,8 @@ namespace EPOOutline
             return new MeshSetupResult(currentIndex, triangleIndex);
         }
 
-        public static void Blit(OutlineParameters parameters, RenderTargetIdentifier source, RenderTargetIdentifier destination, RenderTargetIdentifier destinationDepth, Material material, CommandBuffer targetBuffer, int pass = -1, Rect? viewport = null)
+        public static void Blit(OutlineParameters parameters, RenderTargetIdentifier source, RenderTargetIdentifier destination, RenderTargetIdentifier destinationDepth, Material material, CommandBuffer targetBuffer,
+            int pass = -1, Rect? viewport = null)
         {
             var buffer = targetBuffer == null ? parameters.Buffer : targetBuffer;
             buffer.SetRenderTarget(destination, destinationDepth);

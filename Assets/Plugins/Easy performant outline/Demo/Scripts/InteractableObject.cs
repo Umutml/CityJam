@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+
 #pragma warning disable CS0649
 
 #if EPO_DOTWEEN
@@ -12,11 +13,9 @@ namespace EPOOutline.Demo
 {
     public class InteractableObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
-        [SerializeField]
-        private AudioClip interactionSound;
+        [SerializeField] private AudioClip interactionSound;
 
-        [SerializeField]
-        private bool affectOutlinable = true;
+        [SerializeField] private bool affectOutlinable = true;
 
         private Outlinable outlinable;
 

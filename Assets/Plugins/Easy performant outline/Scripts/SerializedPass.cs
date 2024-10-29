@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace EPOOutline
 {
@@ -17,7 +18,7 @@ namespace EPOOutline
         }
     }
 
-    [System.Serializable]
+    [Serializable]
     public class SerializedPass : ISerializationCallbackReceiver
     {
         public enum PropertyType
@@ -29,43 +30,33 @@ namespace EPOOutline
             TexEnv = 4
         }
 
-        [System.Serializable]
+        [Serializable]
         private class SerializedPropertyKeyValuePair
         {
-            [SerializeField]
-            public string PropertyName;
+            [SerializeField] public string PropertyName;
 
-            [SerializeField]
-            public SerializedPassProperty Property;
+            [SerializeField] public SerializedPassProperty Property;
         }
 
-        [System.Serializable]
+        [Serializable]
         private class SerializedPassProperty
         {
 #pragma warning disable CS0649
-            [SerializeField]
-            public Color ColorValue;
+            [SerializeField] public Color ColorValue;
 
-            [SerializeField]
-            public float FloatValue;
+            [SerializeField] public float FloatValue;
 
-            [SerializeField]
-            public Vector4 VectorValue;
+            [SerializeField] public Vector4 VectorValue;
 
-            [SerializeField]
-            public PropertyType PropertyType;
+            [SerializeField] public PropertyType PropertyType;
 #pragma warning restore CS0649
         }
 
-        [SerializeField]
-        private Shader shader;
+        [SerializeField] private Shader shader;
 
         public Shader Shader
         {
-            get
-            {
-                return shader;
-            }
+            get => shader;
 
             set
             {
@@ -74,11 +65,10 @@ namespace EPOOutline
             }
         }
 
-        [SerializeField]
-        private List<SerializedPropertyKeyValuePair> serializedProperties = new List<SerializedPropertyKeyValuePair>();
+        [SerializeField] private List<SerializedPropertyKeyValuePair> serializedProperties = new();
 
-        private Dictionary<int,     SerializedPassProperty> propertiesById      = new Dictionary<int, SerializedPassProperty>();
-        private Dictionary<string,  SerializedPassProperty> propertiesByName    = new Dictionary<string, SerializedPassProperty>();
+        private Dictionary<int, SerializedPassProperty> propertiesById = new();
+        private Dictionary<string, SerializedPassProperty> propertiesByName = new();
 
         private Material material;
 
@@ -94,7 +84,7 @@ namespace EPOOutline
                 if (material == null || material.shader != shader)
                 {
                     if (material != null)
-                        GameObject.DestroyImmediate(material);
+                        Object.DestroyImmediate(material);
 
                     material = new Material(shader);
                 }
@@ -149,7 +139,9 @@ namespace EPOOutline
             }
 
             if (result.PropertyType == PropertyType.Vector)
+            {
                 return result.VectorValue;
+            }
             else
             {
                 Debug.LogError("The property " + name + " is not a vector property");
@@ -167,7 +159,9 @@ namespace EPOOutline
             }
 
             if (result.PropertyType == PropertyType.Vector)
+            {
                 return result.VectorValue;
+            }
             else
             {
                 Debug.LogError("The property " + hash + " is not a vector property");
@@ -225,7 +219,9 @@ namespace EPOOutline
             }
 
             if (result.PropertyType == PropertyType.Float || result.PropertyType == PropertyType.Range)
+            {
                 return result.FloatValue;
+            }
             else
             {
                 Debug.LogError("The property " + name + " is not a float property");
@@ -243,7 +239,9 @@ namespace EPOOutline
             }
 
             if (result.PropertyType == PropertyType.Float || result.PropertyType == PropertyType.Range)
+            {
                 return result.FloatValue;
+            }
             else
             {
                 Debug.LogError("The property " + hash + " is not a float property");
@@ -301,7 +299,9 @@ namespace EPOOutline
             }
 
             if (result.PropertyType == PropertyType.Color)
+            {
                 return result.ColorValue;
+            }
             else
             {
                 Debug.LogError("The property " + name + " is not a color property");

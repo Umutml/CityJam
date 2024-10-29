@@ -10,9 +10,10 @@
 // ================================================================================================================================
 
 #if defined(SHADER_API_MOBILE) || (defined(SHADER_API_GLCORE) && !defined(SHADER_API_SWITCH)) || defined(SHADER_API_GLES) || defined(SHADER_API_GLES3) // Workaround for bug on Nintendo Switch where SHADER_API_GLCORE is mistakenly defined
+
 	#define MAX_VISIBLE_LIGHTS 32
 #else
-	#define MAX_VISIBLE_LIGHTS 256
+#define MAX_VISIBLE_LIGHTS 256
 #endif
 
 // --------------------------------
@@ -29,7 +30,7 @@ StructuredBuffer<int> _AdditionalLightsIndices;
 #else
 // GLES3 causes a performance regression in some devices when using CBUFFER.
 #ifndef SHADER_API_GLES3
-CBUFFER_START(AdditionalLights)
+CBUFFER_START (AdditionalLights)
 #endif
 float4 _AdditionalLightsPosition[MAX_VISIBLE_LIGHTS];
 half4 _AdditionalLightsColor[MAX_VISIBLE_LIGHTS];
@@ -63,10 +64,10 @@ half4 unity_LightIndices[2];
 // Abstraction over Light shading data.
 struct Light
 {
-    half3   direction;
-    half3   color;
-    half    distanceAttenuation;
-    half    shadowAttenuation;
+    half3 direction;
+    half3 color;
+    half distanceAttenuation;
+    half shadowAttenuation;
 };
 
 // Matches Unity Vanila attenuation
@@ -77,12 +78,12 @@ float DistanceAttenuation(float distanceSqr, half2 distanceAttenuation)
     // for directional lights attenuation will be 1
     float lightAtten = rcp(distanceSqr);
 
-#if SHADER_HINT_NICE_QUALITY
+    #if SHADER_HINT_NICE_QUALITY
     // Use the smoothing factor also used in the Unity lightmapper.
     half factor = distanceSqr * distanceAttenuation.x;
     half smoothFactor = saturate(1.0h - factor * factor);
     smoothFactor = smoothFactor * smoothFactor;
-#else
+    #else
     // We need to smoothly fade attenuation to light range. We start fading linearly at 80% of light range
     // Therefore:
     // fadeDistance = (0.8 * 0.8 * lightRangeSq)
@@ -91,7 +92,7 @@ float DistanceAttenuation(float distanceSqr, half2 distanceAttenuation)
     // distanceSqr * (1.0 / (fadeDistanceSqr - lightRangeSqr)) + (-lightRangeSqr / (fadeDistanceSqr - lightRangeSqr)
     // distanceSqr *        distanceAttenuation.y            +             distanceAttenuation.z
     half smoothFactor = saturate(distanceSqr * distanceAttenuation.x + distanceAttenuation.y);
-#endif
+    #endif
 
     return lightAtten * smoothFactor;
 }
@@ -115,19 +116,19 @@ half AngleAttenuation(half3 spotDirection, half3 lightDirection, half2 spotAtten
 Light GetAdditionalPerObjectLight(int perObjectLightIndex, float3 positionWS)
 {
     // Abstraction over Light input constants
-#if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
+    #if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
     float4 lightPositionWS = _AdditionalLightsBuffer[perObjectLightIndex].position;
     half3 color = _AdditionalLightsBuffer[perObjectLightIndex].color.rgb;
     half4 distanceAndSpotAttenuation = _AdditionalLightsBuffer[perObjectLightIndex].attenuation;
     half4 spotDirection = _AdditionalLightsBuffer[perObjectLightIndex].spotDirection;
     half4 lightOcclusionProbeInfo = _AdditionalLightsBuffer[perObjectLightIndex].occlusionProbeChannels;
-#else
+    #else
     float4 lightPositionWS = _AdditionalLightsPosition[perObjectLightIndex];
     half3 color = _AdditionalLightsColor[perObjectLightIndex].rgb;
     half4 distanceAndSpotAttenuation = _AdditionalLightsAttenuation[perObjectLightIndex];
     half4 spotDirection = _AdditionalLightsSpotDir[perObjectLightIndex];
     half4 lightOcclusionProbeInfo = _AdditionalLightsOcclusionProbes[perObjectLightIndex];
-#endif
+    #endif
 
     // Directional lights store direction in lightPosition.xyz and have .w set to 0.0.
     // This way the following code will work for both directional and punctual lights.
@@ -145,7 +146,7 @@ Light GetAdditionalPerObjectLight(int perObjectLightIndex, float3 positionWS)
     light.color = color;
 
     // In case we're using light probes, we can sample the attenuation from the `unity_ProbesOcclusion`
-#if defined(LIGHTMAP_ON) || defined(_MIXED_LIGHTING_SUBTRACTIVE)
+    #if defined(LIGHTMAP_ON) || defined(_MIXED_LIGHTING_SUBTRACTIVE)
     // First find the probe channel from the light.
     // Then sample `unity_ProbesOcclusion` for the baked occlusion.
     // If the light is not baked, the channel is -1, and we need to apply no occlusion.
@@ -158,32 +159,32 @@ Light GetAdditionalPerObjectLight(int perObjectLightIndex, float3 positionWS)
 
     half probeOcclusionValue = unity_ProbesOcclusion[probeChannel];
     light.distanceAttenuation *= max(probeOcclusionValue, lightProbeContribution);
-#endif
+    #endif
 
     return light;
 }
 
 uint GetPerObjectLightIndexOffset()
 {
-#if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
+    #if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
     return unity_LightData.x;
-#else
+    #else
     return 0;
-#endif
+    #endif
 }
 
 // Returns a per-object index given a loop index.
 // This abstract the underlying data implementation for storing lights/light indices
 int GetPerObjectLightIndex(uint index)
 {
-/////////////////////////////////////////////////////////////////////////////////////////////
-// Structured Buffer Path                                                                   /
-//                                                                                          /
-// Lights and light indices are stored in StructuredBuffer. We can just index them.         /
-// Currently all non-mobile platforms take this path :(                                     /
-// There are limitation in mobile GPUs to use SSBO (performance / no vertex shader support) /
-/////////////////////////////////////////////////////////////////////////////////////////////
-#if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    // Structured Buffer Path                                                                   /
+    //                                                                                          /
+    // Lights and light indices are stored in StructuredBuffer. We can just index them.         /
+    // Currently all non-mobile platforms take this path :(                                     /
+    // There are limitation in mobile GPUs to use SSBO (performance / no vertex shader support) /
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    #if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
     uint offset = unity_LightData.x;
     return _AdditionalLightsIndices[offset + index];
 
@@ -195,16 +196,16 @@ int GetPerObjectLightIndex(uint index)
 // Even trying to reinterpret cast the unity_LightIndices to float[] won't work             /
 // it will cast to float4[] and create extra register pressure. :(                          /
 /////////////////////////////////////////////////////////////////////////////////////////////
-#elif !defined(SHADER_API_GLES)
+    #elif !defined(SHADER_API_GLES)
     // since index is uint shader compiler will implement
     // div & mod as bitfield ops (shift and mask).
-    
+
     // TODO: Can we index a float4? Currently compiler is
     // replacing unity_LightIndicesX[i] with a dp4 with identity matrix.
     // u_xlat16_40 = dot(unity_LightIndices[int(u_xlatu13)], ImmCB_0_0_0[u_xlati1]);
     // This increases both arithmetic and register pressure.
     return unity_LightIndices[index / 4][index % 4];
-#else
+    #else
     // Fallback to GLES2. No bitfield magic here :(.
     // We limit to 4 indices per object and only sample unity_4LightIndices0.
     // Conditional moves are branch free even on mali-400
@@ -212,7 +213,7 @@ int GetPerObjectLightIndex(uint index)
     half2 lightIndex2 = (index < 2.0h) ? unity_LightIndices[0].xy : unity_LightIndices[0].zw;
     half i_rem = (index < 2.0h) ? index : index - 2.0h;
     return (i_rem < 1.0h) ? lightIndex2.x : lightIndex2.y;
-#endif
+    #endif
 }
 
 // Fills a light struct given a loop i index. This will convert the i

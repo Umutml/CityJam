@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace EPOOutline
 {
@@ -39,7 +40,7 @@ namespace EPOOutline
             return fieldInfo;
         }
 
-        public static T GetCustomAttributeFromProperty<T>(this SerializedProperty prop) where T : System.Attribute
+        public static T GetCustomAttributeFromProperty<T>(this SerializedProperty prop) where T : Attribute
         {
             return Array.Find(GetFieldAttributes(prop), x => x is T) as T;
         }
@@ -57,7 +58,7 @@ namespace EPOOutline
 
             var currentShaderReference = shaderProperty.objectReferenceValue as Shader;
 
-            var attribute = (SerializedPassInfoAttribute)null;// property.GetCustomAttributeFromProperty<SerializedPassInfoAttribute>();
+            var attribute = (SerializedPassInfoAttribute)null; // property.GetCustomAttributeFromProperty<SerializedPassInfoAttribute>();
 
             var prefix = attribute == null ? "Hidden/EPO/Fill/" : attribute.ShadersFolder;
             var fillLabel = currentShaderReference == null ? "none" : currentShaderReference.name.Substring(prefix.Length);
@@ -69,10 +70,10 @@ namespace EPOOutline
                 var menu = new GenericMenu();
 
                 menu.AddItem(new GUIContent("none"), currentShaderReference == null && !shaderProperty.hasMultipleDifferentValues, () =>
-                    {
-                        shaderProperty.objectReferenceValue = null;
-                        shaderProperty.serializedObject.ApplyModifiedProperties();
-                    });
+                {
+                    shaderProperty.objectReferenceValue = null;
+                    shaderProperty.serializedObject.ApplyModifiedProperties();
+                });
 
                 var shaders = AssetDatabase.FindAssets("t:Shader");
                 foreach (var shader in shaders)
@@ -82,15 +83,15 @@ namespace EPOOutline
                         continue;
 
                     menu.AddItem(new GUIContent(loadedShader.name.Substring(prefix.Length)), loadedShader == shaderProperty.objectReferenceValue && !shaderProperty.hasMultipleDifferentValues, () =>
-                        {
-                            shaderProperty.objectReferenceValue = loadedShader;
-                            shaderProperty.serializedObject.ApplyModifiedProperties();
-                        });
+                    {
+                        shaderProperty.objectReferenceValue = loadedShader;
+                        shaderProperty.serializedObject.ApplyModifiedProperties();
+                    });
                 }
 
                 menu.ShowAsContext();
             }
-            
+
             if (shaderProperty.hasMultipleDifferentValues)
                 return;
 
@@ -154,7 +155,7 @@ namespace EPOOutline
                                 break;
                         }
 
-                        GameObject.DestroyImmediate(tempMaterial);
+                        Object.DestroyImmediate(tempMaterial);
 
                         properties.Add(propertyName, currentProperty);
                     }
@@ -179,8 +180,8 @@ namespace EPOOutline
                             break;
                         case ShaderUtil.ShaderPropertyType.Range:
                             var floatProperty = currentProperty.FindPropertyRelative("FloatValue");
-                            floatProperty.floatValue = EditorGUI.Slider(fillParametersPosition, content, floatProperty.floatValue, 
-                                ShaderUtil.GetRangeLimits(currentShaderReference, index, 1), 
+                            floatProperty.floatValue = EditorGUI.Slider(fillParametersPosition, content, floatProperty.floatValue,
+                                ShaderUtil.GetRangeLimits(currentShaderReference, index, 1),
                                 ShaderUtil.GetRangeLimits(currentShaderReference, index, 2));
                             break;
                         case ShaderUtil.ShaderPropertyType.TexEnv:
