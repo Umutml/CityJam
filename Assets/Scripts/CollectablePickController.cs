@@ -1,4 +1,3 @@
-using DG.Tweening;
 using UnityEngine;
 
 /// <summary>
@@ -54,13 +53,16 @@ public class CollectablePicker : MonoBehaviour
         collectableItem.TurnObject();
         collectableItem.ScaleObject();
         collectableItem.DisableCollider();
-        
-        // Convert 3D world position to screen position
-        Vector3 screenBarPosition = _mainCamera.ScreenToWorldPoint(gamebarElements[Random.Range(0,gamebarElements.Length)].transform.position);
 
-        // Move the selected item to the UI position
-        collectableItem.MoveToUIPosition(screenBarPosition);
-        // collectableItem.transform.DOMove(screenPosition, 1f).SetEase(Ease.InOutSine);
+
+        // Convert the UI element's position to a screen position
+        Vector3 screenPosition = RectTransformUtility.WorldToScreenPoint(_mainCamera, gamebarElements[Random.Range(0, gamebarElements.Length)].transform.position);
+        var centeredY = screenPosition.y - 25;
+        // Convert the screen position to a world position
+        var worldPosition = _mainCamera.ScreenToWorldPoint(new Vector3(screenPosition.x, centeredY, _mainCamera.nearClipPlane + 1f));
+
+        // Move the selected item to the calculated world position
+        collectableItem.MoveToUIPosition(worldPosition);
     }
 
     #endregion

@@ -8,7 +8,6 @@ public class Collectable : MonoBehaviour
     private BoxCollider _boxCollider;
     private readonly float _duration = 0.5f;
     private readonly Vector3 _targetRotation = new(-90, 180, 0); // The target rotation need to be UI like rotation
-    private readonly Vector3 _targetScale = new(0.35f, 0.35f, 0.35f);
 
     private void Awake()
     {
@@ -36,12 +35,15 @@ public class Collectable : MonoBehaviour
 
     public void TurnObject()
     {
-        transform.DORotate(_targetRotation, _duration).SetEase(Ease.OutSine);
+        transform.DORotate(_targetRotation, _duration).SetEase(Ease.OutSine).OnComplete(() =>
+        {
+            transform.rotation = Quaternion.identity; // Reset the rotation
+        });
     }
 
     public void ScaleObject()
     {
-        transform.DOScale(_targetScale, _duration).SetEase(Ease.OutSine);
+        transform.DOScale(transform.localScale * 0.8f, _duration).SetEase(Ease.OutSine);
     }
     
     public void DisableCollider()
