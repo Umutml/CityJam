@@ -62,18 +62,6 @@ namespace Managers
                 _currentZoom += deltaMagnitudeDiff * zoomSpeed;
                 _currentZoom = Mathf.Clamp(_currentZoom, minZoom, maxZoom);
             }
-            else if (Input.touchCount == 1)
-            {
-                if (Input.GetTouch(0).phase == TouchPhase.Ended)
-                {
-                    if (Time.time - _lastTapTime < DoubleTapTime)
-                    {
-                        _currentZoom = Mathf.Approximately(_currentZoom, minZoom) ? maxZoom : minZoom;
-                    }
-
-                    _lastTapTime = Time.time;
-                }
-            }
 
             _camera.orthographicSize = Mathf.Lerp(_camera.orthographicSize, _currentZoom, Time.deltaTime * _zoomLerpSpeed);
         }

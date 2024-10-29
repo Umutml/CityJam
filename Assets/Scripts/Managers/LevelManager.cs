@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Gamecore;
 using UnityEngine;
 
@@ -14,6 +15,8 @@ namespace Managers
         private Dictionary<CollectableTypes, int> requiredBuildings;
         public static LevelManager Instance { get; private set; }
         public static Action OnLevelLoaded;
+        public static Action OnLevelCompleted;
+        public static bool IsLevelPlaying { get; private set; }
 
         private void Awake()
         {
@@ -26,6 +29,8 @@ namespace Managers
             {
                 Destroy(gameObject);
             }
+
+            GamebarController.OnCollectableDestroyed += CheckLevelCompletion;
         }
 
         private void Start()
@@ -33,7 +38,7 @@ namespace Managers
             LoadLevel(levelDatas[0].levelNumber); // Load the first level
         }
 
-        public void LoadLevel(int levelIndex)
+        private void LoadLevel(int levelIndex)
         {
             if (levelIndex < 0 || levelIndex >= levelDatas.Length)
             {
@@ -53,6 +58,7 @@ namespace Managers
 
             LevelCreator.Instance.CreateLevel(); // Add logic to load the map and create objects for the new level
             OnLevelLoaded?.Invoke(); // Notify subscribers that the level has been loaded
+            IsLevelPlaying = true;
             // Add logic to load the map and create objects for the new level
             Debug.Log($"Loaded Level {currentLevelData.levelNumber + 1}"); // Level numbers are 0 based
         }
@@ -68,12 +74,12 @@ namespace Managers
             if (currentBuildings.ContainsKey(buildingTypes))
             {
                 currentBuildings[buildingTypes]++;
-                CheckLevelCompletion();
             }
         }
 
         private void CheckLevelCompletion()
         {
+            if (!IsLevelPlaying) return;
             foreach (var building in requiredBuildings)
             {
                 if (currentBuildings[building.Key] < building.Value)
@@ -89,26 +95,33 @@ namespace Managers
         {
             if (currentLevelData.levelNumber + 1 >= levelDatas.Length)
             {
-                Debug.LogError("No more levels available");
+                Debug.LogError("No more levels available could not increment level restarted to 0");
+                currentLevelData = levelDatas[0];
                 return;
             }
             currentLevelData = levelDatas[currentLevelData.levelNumber + 1];
         }
         private void LevelCompleted()
         {
+            IsLevelPlaying = false;
             Debug.Log("Level Completed!");
-            // Add additional logic for level completion here
-
-            // Load the next level if available
+            OnLevelCompleted?.Invoke();
+        }
+        public void PlayNextLevel()
+        {
             if (currentLevelData.levelNumber < levelDatas.Length)
             {
                 LoadLevel(currentLevelData.levelNumber);
-                OnLevelLoaded?.Invoke();
             }
             else
             {
                 Debug.Log("All levels completed!");
             }
+        }
+        
+        private void OnDestroy()
+        {
+            GamebarController.OnCollectableDestroyed -= CheckLevelCompletion;
         }
     }
 }

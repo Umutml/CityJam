@@ -44,10 +44,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b1bcd6c20746844f91b263d642c92ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rayUpperDiff: 25
-  buildingPrefabs:
-  - {fileID: 3361853144019719849, guid: 31f2e8175a3bfa2468c9b00bb249b47d, type: 3}
-  - {fileID: 1482912660565672094, guid: 9992a4f3ab9aa454a879f83568db612d, type: 3}
-  areaObject: {fileID: 0}
-  raySpacing: 0.1
-  margin: 1
+  RaySpacing: 0.5
+  levelBuildPrefabs: []

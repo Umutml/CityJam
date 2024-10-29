@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using DG.Tweening;
 using Managers;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Gamecore
 {
@@ -17,6 +20,9 @@ namespace Gamecore
         private float _JumpAnimationDuration = 0.3f;
 
         [SerializeField] private Camera uiCamera;
+        [SerializeField] private Object destroyParticleFX;
+        
+        public static Action OnCollectableDestroyed;
 
         private void Awake()
         {
@@ -65,7 +71,9 @@ namespace Gamecore
                         slot.ClearOccupyingObject();
                         slot.SetOccupied(false);
                     }
-                    PlayDestroyFX(calculatedCenteredPosition);
+                    
+                    PlayDestroyFX(calculatedCenteredPosition, _destroyAnimationDuration);
+                    OnCollectableDestroyed?.Invoke();
                     break;
                 }
             }
@@ -80,9 +88,11 @@ namespace Gamecore
             }
         }
         
-        private void PlayDestroyFX(Vector3 position)
+        private async void PlayDestroyFX(Vector3 position, float duration = 1.5f)
         {
-            // Play destroy effect
+            await Task.Delay((int) (duration * 1000));
+            var particle = Instantiate(destroyParticleFX, position, Quaternion.identity);
+            Destroy(particle, duration);
         }
 
         public GamebarSlot[] GetGamebarElements()

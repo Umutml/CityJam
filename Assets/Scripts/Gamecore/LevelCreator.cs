@@ -1,34 +1,33 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using DG.Tweening;
 using Managers;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Gamecore
 {
     public class LevelCreator : MonoBehaviour
     {
-        public static LevelCreator Instance { get; private set; }
-
         private const float RayUpperDiff = 25f;
-        [SerializeField]private float RaySpacing = 0.1f; // Ray spacing
         private const float Margin = 1f; // Margin from the edges
-    
-        [SerializeField] private List<GameObject> levelBuildPrefabs;
-    
-        private GameObject _levelMap;
-        private Transform _areaObject; // Reference to the 3D plane object on map
-        private LevelData _currentLevelData;
-        private Vector3 _areaEnd;
-        private Vector3 _areaStart;
-        private Quaternion _buildingRotation;
-        private Vector3 _buildingSize;
-        private GameObject _nextBuilding;
-        
+
         private const string BuildableTag = "Buildable";
         private const string RoadTag = "Road";
         private const string BuildingTag = "Building";
+        [SerializeField] private float RaySpacing = 0.1f; // Ray spacing
+
+        [SerializeField] private List<GameObject> levelBuildPrefabs;
+        private Vector3 _areaEnd;
+        private Transform _areaObject; // Reference to the 3D plane object on map
+        private Vector3 _areaStart;
+        private Quaternion _buildingRotation;
+        private Vector3 _buildingSize;
+        private LevelData _currentLevelData;
+
+        private GameObject _levelMap;
+        private GameObject _nextBuilding;
+        public static LevelCreator Instance { get; private set; }
 
         private void Awake()
         {
@@ -40,22 +39,32 @@ namespace Gamecore
             {
                 Destroy(gameObject);
             }
+
+            LevelManager.OnLevelCompleted += OnLevelCompletedHandler;
         }
-    
-        private void Start()
+
+        private void OnDestroy()
         {
-            // CreateLevel();
+            LevelManager.OnLevelCompleted -= OnLevelCompletedHandler;
         }
-    
+
+        private void OnLevelCompletedHandler()
+        {
+            // RemoveOldLevelAssets().Wait();
+        }
+
+
         public async void CreateLevel()
         {
             var levelManager = LevelManager.Instance;
             _currentLevelData = LevelManager.Instance.currentLevelData;
 
+            levelBuildPrefabs.Clear();
             foreach (var requirement in levelManager.currentLevelData.buildingRequirements)
             {
                 levelBuildPrefabs.Add(requirement.BuildingPrefab);
             }
+
             // Calculate areaStart and areaEnd based on the given platform object
             await RemoveOldLevelAssets();
             await Task.Delay(100);
@@ -70,6 +79,7 @@ namespace Gamecore
             {
                 Destroy(_levelMap);
             }
+
             Debug.Log("Old level assets removed");
             return Task.CompletedTask;
         }
@@ -104,9 +114,9 @@ namespace Gamecore
             foreach (var requirement in buildingRequirements)
             {
                 var buildingPrefab = requirement.BuildingPrefab;
-                var buildingCount = requirement.requiredCount + 1; // Place one extra building to ensure all required buildings are placed
+                var buildingCount = requirement.requiredCount + 2; // Place two extra building to ensure all required buildings are placed
 
-                for (int i = 0; i < buildingCount; i++)
+                for (var i = 0; i < buildingCount; i++)
                 {
                     var placeBuild = PlaceRequiredBuilding(buildingPrefab);
                     if (!placeBuild)
@@ -116,7 +126,7 @@ namespace Gamecore
                     }
                 }
             }
-            
+
             Debug.Log("All required buildings placed");
 
             // Place random buildings in the remaining space
@@ -126,17 +136,17 @@ namespace Gamecore
                 {
                     var rayOrigin = new Vector3(x, _areaStart.y + RayUpperDiff, z);
                     var ray = new Ray(rayOrigin, Vector3.down); // Cast ray downwards
-            
+
                     if (Physics.Raycast(ray, out var hit))
                     {
                         // Skip if it hits a Road or Building
                         if (hit.transform.CompareTag(RoadTag) || hit.transform.CompareTag(BuildingTag))
                             continue;
-            
+
                         _nextBuilding = GetRandomBuildingPrefab();
                         _buildingSize = GetBuildingSize(_nextBuilding);
                         _buildingRotation = GetRandomRotation();
-            
+
                         // Check if the building area is fully within the Buildable area
                         if (IsAreaBuildable(hit.point))
                         {
@@ -147,14 +157,14 @@ namespace Gamecore
             }
         }
 
-        private void CreateSingleBuild(GameObject buildingPrefab, Vector3 position, Quaternion rotation,Transform parent)
+        private void CreateSingleBuild(GameObject buildingPrefab, Vector3 position, Quaternion rotation, Transform parent)
         {
             var tempBuild = Instantiate(buildingPrefab, position, rotation, parent.transform);
             var firstYPosition = tempBuild.transform.position.y;
             // Scale the building from zero to its original scale with a nice animation
-            tempBuild.transform.DOMoveY(firstYPosition,0.75f).SetEase(Ease.OutQuad).From(Vector3.down * 2);
+            tempBuild.transform.DOMoveY(firstYPosition, 0.75f).SetEase(Ease.OutQuad).From(Vector3.down * 2);
         }
-        
+
 
         private bool PlaceRequiredBuilding(GameObject buildingPrefab)
         {
@@ -183,6 +193,7 @@ namespace Gamecore
                     }
                 }
             }
+
             return false;
         }
 
