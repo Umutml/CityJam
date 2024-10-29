@@ -7,7 +7,7 @@ public class GamebarUIController : MonoBehaviour
 {
     [SerializeField] private GamebarSlot[] gamebarSlots;
     private Camera _mainCamera;
-    [SerializeField] private float slotHeightDiff = 15f;
+    [SerializeField] private float slotHeightDiff = 10f;
     [SerializeField] private float slotZAxisDiff = 3f;
     private float _moveAnimationDuration = 1f;
     private float _destroyAnimationDuration = 0.3f;

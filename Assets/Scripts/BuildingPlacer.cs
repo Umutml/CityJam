@@ -28,7 +28,7 @@ public class BuildingPlacer : MonoBehaviour
     private GameObject GetRandomBuildingPrefab()
     {
         var randomChoice = Random.Range(0, 100);
-        if (randomChoice < 70)
+        if (randomChoice < 60)
         {
             return buildingPrefabs[1];
         }
