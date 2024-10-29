@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Gamecore;
 using UnityEngine;
 
 namespace Managers
@@ -8,8 +9,8 @@ namespace Managers
         public static LevelManager Instance { get; private set; }
 
         [SerializeField] private LevelData[] levelDatas;
-        private Dictionary<CollectableType, int> requiredBuildings;
-        private Dictionary<CollectableType, int> currentBuildings;
+        private Dictionary<CollectableTypes, int> requiredBuildings;
+        private Dictionary<CollectableTypes, int> currentBuildings;
         public LevelData currentLevelData;    
 
         private void Awake()
@@ -39,16 +40,18 @@ namespace Managers
             }
 
             UpdateCurrentLevelData(levelIndex);
-            requiredBuildings = new Dictionary<CollectableType, int>();
-            currentBuildings = new Dictionary<CollectableType, int>();
+            requiredBuildings = new Dictionary<CollectableTypes, int>();
+            currentBuildings = new Dictionary<CollectableTypes, int>();
 
             foreach (var buildingType in currentLevelData.buildingRequirements)
             {
-                requiredBuildings[buildingType.buildingType] = buildingType.requiredCount;
-                Debug.Log($"Level {currentLevelData.levelNumber} requires {buildingType.requiredCount} {buildingType.buildingType}");
-                currentBuildings[buildingType.buildingType] = 0;
+                requiredBuildings[buildingType.buildingTypes] = buildingType.requiredCount;
+                Debug.Log($"Level {currentLevelData.levelNumber} requires {buildingType.requiredCount} {buildingType.buildingTypes}");
+                currentBuildings[buildingType.buildingTypes] = 0;
             }
 
+            
+            LevelCreator.Instance.CreateLevel(); // Add logic to load the map and create objects for the new level
             // Add logic to load the map and create objects for the new level
             Debug.Log($"Loaded Level {currentLevelData.levelNumber}");
         }
@@ -58,12 +61,12 @@ namespace Managers
             currentLevelData = levelDatas[levelIndex];
         }
 
-        public void AddBuilding(CollectableType buildingType)
+        public void AddBuilding(CollectableTypes buildingTypes)
         {
-            Debug.Log($"Added {buildingType}");
-            if (currentBuildings.ContainsKey(buildingType))
+            Debug.Log($"Added {buildingTypes}");
+            if (currentBuildings.ContainsKey(buildingTypes))
             {
-                currentBuildings[buildingType]++;
+                currentBuildings[buildingTypes]++;
                 CheckLevelCompletion();
             }
         }

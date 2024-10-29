@@ -7,12 +7,14 @@ public class LevelData : ScriptableObject
     public BuildingRequirement[] buildingRequirements;
     public int levelNumber;
     public float levelTime;
+    public GameObject levelMap;
 }
 
 [System.Serializable]
 public class BuildingRequirement
 {
-    public CollectableType buildingType;
+    public CollectableTypes buildingTypes;
     public int requiredCount;
     public Image BuildingImage;
+    public GameObject BuildingPrefab;
 }

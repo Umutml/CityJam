@@ -4,145 +4,148 @@ using DG.Tweening;
 using Managers;
 using UnityEngine;
 
-public class GamebarController : MonoBehaviour
+namespace Gamecore
 {
-    [SerializeField] private GamebarSlot[] gamebarSlots;
-    [SerializeField] private float slotHeightDiff = 10f;
-    [SerializeField] private float slotZAxisDiff = 3f;
-    private float _moveAnimationDuration = 1f;
-    private float _destroyAnimationDuration = 0.3f;
-    private float _JumpAnimationDuration = 0.3f;
-
-    [SerializeField] private Camera uiCamera;
-
-    private void Awake()
+    public class GamebarController : MonoBehaviour
     {
-    }
+        [SerializeField] private GamebarSlot[] gamebarSlots;
+        [SerializeField] private float slotHeightDiff = 10f;
+        [SerializeField] private float slotZAxisDiff = 3f;
+        private float _moveAnimationDuration = 1f;
+        private float _destroyAnimationDuration = 0.3f;
+        private float _JumpAnimationDuration = 0.3f;
 
-    private void Update()
-    {
-        CheckFor3SameCollectables();
-        ShiftCollectablesLeft();
-    }
+        [SerializeField] private Camera uiCamera;
 
-    private void CheckFor3SameCollectables()
-    {
-        var collecteds = new List<Collectable>();
-        foreach (var slot in gamebarSlots)
+        private void Awake()
         {
-            if (slot.IsOccupied && !slot.IsAnimating())
-            {
-                collecteds.Add(slot.GetOccupyingObject().GetComponent<Collectable>());
-            }
         }
 
-        if (collecteds.Count < 3)
-            return;
-
-        for (int i = 0; i < collecteds.Count; i++)
+        private void Update()
         {
-            var collectableType = collecteds[i].GetCollectableType();
-            var sameTypeCollectables = collecteds.Where(collectable => collectable.GetCollectableType() == collectableType).ToList();
+            CheckFor3SameCollectables();
+            ShiftCollectablesLeft();
+        }
 
-            if (sameTypeCollectables.Count == 3)
+        private void CheckFor3SameCollectables()
+        {
+            var collecteds = new List<Collectable>();
+            foreach (var slot in gamebarSlots)
             {
-                var centeredPosition = sameTypeCollectables.Aggregate(Vector3.zero, (current, collectable) => current + collectable.transform.position) / 3;
-                centeredPosition.y += 2f;
-                foreach (var collectable in sameTypeCollectables)
+                if (slot.IsOccupied && !slot.IsAnimating())
                 {
-                    collectable.transform.DOMove(centeredPosition, _destroyAnimationDuration).SetEase(Ease.InBack).OnComplete(() =>
-                    {
-                        LevelManager.Instance.AddBuilding(collectable.GetCollectableType());
-                        collectable.DestroyCollectable();
-                    });
-
-                    var slot = gamebarSlots.First(s => s.GetOccupyingObject() == collectable.gameObject);
-                    slot.ClearOccupyingObject();
-                    slot.SetOccupied(false);
+                    collecteds.Add(slot.GetOccupyingObject().GetComponent<Collectable>());
                 }
-                break;
+            }
+
+            if (collecteds.Count < 3)
+                return;
+
+            for (int i = 0; i < collecteds.Count; i++)
+            {
+                var collectableType = collecteds[i].GetCollectableType();
+                var sameTypeCollectables = collecteds.Where(collectable => collectable.GetCollectableType() == collectableType).ToList();
+
+                if (sameTypeCollectables.Count == 3)
+                {
+                    var centeredPosition = sameTypeCollectables.Aggregate(Vector3.zero, (current, collectable) => current + collectable.transform.position) / 3;
+                    centeredPosition.y += 2f;
+                    foreach (var collectable in sameTypeCollectables)
+                    {
+                        collectable.transform.DOMove(centeredPosition, _destroyAnimationDuration).SetEase(Ease.InBack).OnComplete(() =>
+                        {
+                            LevelManager.Instance.AddBuilding(collectable.GetCollectableType());
+                            collectable.DestroyCollectable();
+                        });
+
+                        var slot = gamebarSlots.First(s => s.GetOccupyingObject() == collectable.gameObject);
+                        slot.ClearOccupyingObject();
+                        slot.SetOccupied(false);
+                    }
+                    break;
+                }
             }
         }
-    }
 
-    public GamebarSlot[] GetGamebarElements()
-    {
-        return gamebarSlots;
-    }
-
-    public void AddCollectableToSlot(Collectable collectable)
-    {
-        var firstEmptySlot = GetFirstEmptySlot();
-        if (firstEmptySlot == null)
+        public GamebarSlot[] GetGamebarElements()
         {
-            Debug.LogError("No empty slot found");
-            return;
+            return gamebarSlots;
         }
 
-        MoveCollectableToSlot(collectable, firstEmptySlot);
-        firstEmptySlot.SetOccupyingObject(collectable.gameObject);
-        firstEmptySlot.SetOccupied(true);
-    }
-
-    private void MoveCollectableToSlot(Collectable collectable, GamebarSlot slot)
-    {
-        Vector3 screenPosition = RectTransformUtility.WorldToScreenPoint(uiCamera, slot.transform.position);
-        var centeredY = screenPosition.y - slotHeightDiff;
-        var worldPosition = uiCamera.ScreenToWorldPoint(new Vector3(screenPosition.x, centeredY, uiCamera.nearClipPlane + slotZAxisDiff));
-
-        slot.SetAnimating(true);
-        collectable.transform.DOMove(worldPosition, _moveAnimationDuration).SetEase(Ease.InOutSine).OnComplete(() =>
+        public void AddCollectableToSlot(Collectable collectable)
         {
-            collectable.Highlight(false);
-            collectable.Bounce();
-            slot.Bounce();
-            slot.SetAnimating(false);
-        });
-    }
-
-    public GamebarSlot GetFirstEmptySlot()
-    {
-        return gamebarSlots.FirstOrDefault(slot => !slot.IsOccupied);
-    }
-
-    private void ShiftCollectablesLeft()
-    {
-        for (int i = 0; i < gamebarSlots.Length - 1; i++)
-        {
-            if (!gamebarSlots[i].IsOccupied)
+            var firstEmptySlot = GetFirstEmptySlot();
+            if (firstEmptySlot == null)
             {
-                for (int j = i + 1; j < gamebarSlots.Length; j++)
-                {
-                    if (gamebarSlots[j].IsOccupied && !gamebarSlots[j].IsAnimating())
-                    {
-                        var collectable = gamebarSlots[j].GetOccupyingObject().GetComponent<Collectable>();
-                        DoJumpCollectableToSlot(collectable, gamebarSlots[i]);
-                        
-                        gamebarSlots[i].SetOccupyingObject(collectable.gameObject);
-                        gamebarSlots[i].SetOccupied(true);
+                Debug.LogError("No empty slot found");
+                return;
+            }
 
-                        gamebarSlots[j].ClearOccupyingObject();
-                        gamebarSlots[j].SetOccupied(false);
-                        break;
+            MoveCollectableToSlot(collectable, firstEmptySlot);
+            firstEmptySlot.SetOccupyingObject(collectable.gameObject);
+            firstEmptySlot.SetOccupied(true);
+        }
+
+        private void MoveCollectableToSlot(Collectable collectable, GamebarSlot slot)
+        {
+            Vector3 screenPosition = RectTransformUtility.WorldToScreenPoint(uiCamera, slot.transform.position);
+            var centeredY = screenPosition.y - slotHeightDiff;
+            var worldPosition = uiCamera.ScreenToWorldPoint(new Vector3(screenPosition.x, centeredY, uiCamera.nearClipPlane + slotZAxisDiff));
+
+            slot.SetAnimating(true);
+            collectable.transform.DOMove(worldPosition, _moveAnimationDuration).SetEase(Ease.InOutSine).OnComplete(() =>
+            {
+                collectable.Highlight(false);
+                collectable.Bounce();
+                slot.Bounce();
+                slot.SetAnimating(false);
+            });
+        }
+
+        public GamebarSlot GetFirstEmptySlot()
+        {
+            return gamebarSlots.FirstOrDefault(slot => !slot.IsOccupied);
+        }
+
+        private void ShiftCollectablesLeft()
+        {
+            for (int i = 0; i < gamebarSlots.Length - 1; i++)
+            {
+                if (!gamebarSlots[i].IsOccupied)
+                {
+                    for (int j = i + 1; j < gamebarSlots.Length; j++)
+                    {
+                        if (gamebarSlots[j].IsOccupied && !gamebarSlots[j].IsAnimating())
+                        {
+                            var collectable = gamebarSlots[j].GetOccupyingObject().GetComponent<Collectable>();
+                            DoJumpCollectableToSlot(collectable, gamebarSlots[i]);
+                        
+                            gamebarSlots[i].SetOccupyingObject(collectable.gameObject);
+                            gamebarSlots[i].SetOccupied(true);
+
+                            gamebarSlots[j].ClearOccupyingObject();
+                            gamebarSlots[j].SetOccupied(false);
+                            break;
+                        }
                     }
                 }
             }
         }
-    }
     
-    private void DoJumpCollectableToSlot(Collectable collectable, GamebarSlot slot)
-    {
-        Vector3 screenPosition = RectTransformUtility.WorldToScreenPoint(uiCamera, slot.transform.position);
-        var centeredY = screenPosition.y - slotHeightDiff;
-        var worldPosition = uiCamera.ScreenToWorldPoint(new Vector3(screenPosition.x, centeredY, uiCamera.nearClipPlane + slotZAxisDiff));
-
-        slot.SetAnimating(true);
-        collectable.transform.DOJump(worldPosition,1,1, _JumpAnimationDuration).SetEase(Ease.InOutSine).OnComplete(() =>
+        private void DoJumpCollectableToSlot(Collectable collectable, GamebarSlot slot)
         {
-            collectable.Highlight(false);
-            collectable.Bounce();
-            slot.Bounce();
-            slot.SetAnimating(false);
-        });
+            Vector3 screenPosition = RectTransformUtility.WorldToScreenPoint(uiCamera, slot.transform.position);
+            var centeredY = screenPosition.y - slotHeightDiff;
+            var worldPosition = uiCamera.ScreenToWorldPoint(new Vector3(screenPosition.x, centeredY, uiCamera.nearClipPlane + slotZAxisDiff));
+
+            slot.SetAnimating(true);
+            collectable.transform.DOJump(worldPosition,1,1, _JumpAnimationDuration).SetEase(Ease.InOutSine).OnComplete(() =>
+            {
+                collectable.Highlight(false);
+                collectable.Bounce();
+                slot.Bounce();
+                slot.SetAnimating(false);
+            });
+        }
     }
 }

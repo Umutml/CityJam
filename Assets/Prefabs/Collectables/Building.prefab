@@ -342,7 +342,7 @@ GameObject:
   - component: {fileID: 2609519313098817938}
   - component: {fileID: 8368366792914609936}
   m_Layer: 7
-  m_Name: B6New
+  m_Name: Building
   m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
