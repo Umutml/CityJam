@@ -8,7 +8,26 @@ public class Collectable : MonoBehaviour
     private BoxCollider _boxCollider;
     private readonly float _duration = 0.5f;
     private readonly Vector3 _targetRotation = new(-90, 180, 0); // The target rotation need to be UI like rotation
+    [SerializeField] private CollectableType collectableType;
 
+    // Create a method to get the collectable type
+    public enum CollectableType
+    {
+        House,
+        Building,
+        TajMahal,
+        SkyTower,
+    }
+    
+    public CollectableType GetCollectableType()
+    {
+        return collectableType;
+    }
+    
+    public void DestroyCollectable()
+    {
+        Destroy(gameObject);
+    }
     private void Awake()
     {
         _outlineable = GetComponent<Outlinable>();
@@ -16,20 +35,21 @@ public class Collectable : MonoBehaviour
         _outlineable.enabled = false;
     }
 
-    public void Highlight(bool highlight)
+    public void Highlight(bool highlight, Color color = default)
     {
-        // Highlight the collectable
+        if (color == default)
+        {
+            color = Color.cyan;
+        }
 
         if (highlight)
         {
-            // Highlight the collectable 3d object outline,
-            _outlineable.OutlineParameters.Color = Color.cyan;
+            _outlineable.OutlineParameters.Color = color;
             _outlineable.enabled = true;
-            Debug.Log("Highlighting collectable");
         }
         else
         {
-            // Remove the highlight from the collectable
+            _outlineable.enabled = false;
         }
     }
 
@@ -37,13 +57,17 @@ public class Collectable : MonoBehaviour
     {
         transform.DORotate(_targetRotation, _duration).SetEase(Ease.OutSine).OnComplete(() =>
         {
-            transform.rotation = Quaternion.identity; // Reset the rotation
+            transform.DORotate(Vector3.zero, _duration).SetEase(Ease.OutSine); // Reset the rotation
         });
     }
 
     public void ScaleObject()
     {
-        transform.DOScale(transform.localScale * 0.8f, _duration).SetEase(Ease.OutSine);
+        var firstScale = transform.localScale;
+        transform.DOScale(transform.localScale * 1.5f, _duration).SetEase(Ease.OutQuad).OnComplete(() =>
+        {
+            transform.DOScale(firstScale, _duration).SetEase(Ease.OutQuad); // Reset the scale
+        });
     }
     
     public void DisableCollider()
@@ -51,10 +75,22 @@ public class Collectable : MonoBehaviour
         _boxCollider.enabled = false;
         // Disable the collider of the collectable
     }
-    
-    public void MoveToUIPosition(Vector3 screenPosition)
+
+    public void Bounce()
     {
-        transform.DOMove(screenPosition, 1f).SetEase(Ease.InOutSine);
-        // Move the collectable to the UI position
+        // Bounce the collectable
+        Vector3 downPosition = transform.position - new Vector3(0, 0.3f, 0);
+        Vector3 upPosition = transform.position;
+
+        Sequence sequence = DOTween.Sequence();
+        sequence.Append(transform.DOMove(downPosition, 0.1f));
+        sequence.Append(transform.DOMove(upPosition, 0.1f).SetEase(Ease.InOutBounce));
+    }
+    
+    public void ResetObjectState()
+    {
+        // Reset the object state
+        _outlineable.enabled = false;
+        _boxCollider.enabled = true;
     }
 }

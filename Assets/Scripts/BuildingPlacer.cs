@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class BuildingPlacer : MonoBehaviour
@@ -36,7 +37,7 @@ public class BuildingPlacer : MonoBehaviour
         return buildingPrefab;
     }
 
-    private void PlaceBuildings()
+    private async void PlaceBuildings()
     {
         for (var x = _areaStart.x + margin; x <= _areaEnd.x - margin; x += raySpacing)
         {
@@ -48,6 +49,7 @@ public class BuildingPlacer : MonoBehaviour
                 if (Physics.Raycast(ray, out var hit))
                 {
                     // Skip if it hits a Road or Building
+                    Debug.DrawRay( rayOrigin, Vector3.down * 100, Color.red, 10f);
                     if (hit.transform.CompareTag("Road") || hit.transform.CompareTag("Building"))
                     {
                         continue;

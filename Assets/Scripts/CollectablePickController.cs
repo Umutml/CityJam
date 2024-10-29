@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
@@ -15,7 +16,7 @@ public class CollectablePicker : MonoBehaviour
     private Camera _mainCamera;
     private readonly float cooldownTime = 0.15f;
     private float lastClickTime;
-    private RectTransform[] gamebarElements;
+    private GamebarSlot[] gamebarSlots;
 
     #endregion
 
@@ -25,7 +26,7 @@ public class CollectablePicker : MonoBehaviour
     {
         _mainCamera = Camera.main;
         _gamebarUIController = FindObjectOfType<GamebarUIController>();
-        gamebarElements = _gamebarUIController.GetGamebarElements();
+        gamebarSlots = _gamebarUIController.GetGamebarElements();
     }
 
     private void Update()
@@ -47,22 +48,24 @@ public class CollectablePicker : MonoBehaviour
         }
     }
 
-    private void ProcessSelectedObject(Collectable collectableItem)
+    private async void ProcessSelectedObject(Collectable collectableItem)
     {
+        var emptySlot = _gamebarUIController.GetFirstEmptySlot();
+
+        if (emptySlot == null)
+        {
+            collectableItem.Highlight(true, Color.red);
+            await Task.Delay(50);
+            collectableItem.Highlight(false);
+            return;
+        }
+        
         collectableItem.Highlight(true);
         collectableItem.TurnObject();
         collectableItem.ScaleObject();
         collectableItem.DisableCollider();
-
-
-        // Convert the UI element's position to a screen position
-        Vector3 screenPosition = RectTransformUtility.WorldToScreenPoint(_mainCamera, gamebarElements[Random.Range(0, gamebarElements.Length)].transform.position);
-        var centeredY = screenPosition.y - 25;
-        // Convert the screen position to a world position
-        var worldPosition = _mainCamera.ScreenToWorldPoint(new Vector3(screenPosition.x, centeredY, _mainCamera.nearClipPlane + 1f));
-
-        // Move the selected item to the calculated world position
-        collectableItem.MoveToUIPosition(worldPosition);
+        
+        _gamebarUIController.AddCollectableToSlot(collectableItem);
     }
 
     #endregion
