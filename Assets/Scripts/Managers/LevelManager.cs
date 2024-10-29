@@ -13,7 +13,7 @@ namespace Managers
         private Dictionary<CollectableTypes, int> currentBuildings;
         private Dictionary<CollectableTypes, int> requiredBuildings;
         public static LevelManager Instance { get; private set; }
-        public Action OnLevelLoaded;
+        public static Action OnLevelLoaded;
 
         private void Awake()
         {

@@ -11,6 +11,7 @@ namespace Gamecore
         [SerializeField] private GamebarSlot[] gamebarSlots;
         [SerializeField] private float slotHeightDiff = 10f;
         [SerializeField] private float slotZAxisDiff = 3f;
+        private float _destroyPositionUpDiff = 2f;
         private float _moveAnimationDuration = 1f;
         private float _destroyAnimationDuration = 0.3f;
         private float _JumpAnimationDuration = 0.3f;
@@ -19,6 +20,7 @@ namespace Gamecore
 
         private void Awake()
         {
+            LevelManager.OnLevelLoaded += ResetBarSlots;
         }
 
         private void Update()
@@ -34,6 +36,7 @@ namespace Gamecore
             {
                 if (slot.IsOccupied && !slot.IsAnimating())
                 {
+                    if (slot.GetOccupyingObject() == null) continue;
                     collecteds.Add(slot.GetOccupyingObject().GetComponent<Collectable>());
                 }
             }
@@ -49,10 +52,10 @@ namespace Gamecore
                 if (sameTypeCollectables.Count == 3)
                 {
                     var centeredPosition = sameTypeCollectables.Aggregate(Vector3.zero, (current, collectable) => current + collectable.transform.position) / 3;
-                    centeredPosition.y += 2f;
+                    var calculatedCenteredPosition = centeredPosition + Vector3.up * _destroyPositionUpDiff;
                     foreach (var collectable in sameTypeCollectables)
                     {
-                        collectable.transform.DOMove(centeredPosition, _destroyAnimationDuration).SetEase(Ease.InBack).OnComplete(() =>
+                        collectable.transform.DOMove(calculatedCenteredPosition, _destroyAnimationDuration).SetEase(Ease.InBack).OnComplete(() =>
                         {
                             LevelManager.Instance.AddBuilding(collectable.GetCollectableType());
                             collectable.DestroyCollectable();
@@ -62,9 +65,24 @@ namespace Gamecore
                         slot.ClearOccupyingObject();
                         slot.SetOccupied(false);
                     }
+                    PlayDestroyFX(calculatedCenteredPosition);
                     break;
                 }
             }
+        }
+        
+        private void ResetBarSlots()
+        {
+            foreach (var slot in gamebarSlots)
+            {
+                slot.ClearOccupyingObject();
+                slot.SetOccupied(false);
+            }
+        }
+        
+        private void PlayDestroyFX(Vector3 position)
+        {
+            // Play destroy effect
         }
 
         public GamebarSlot[] GetGamebarElements()
@@ -146,6 +164,11 @@ namespace Gamecore
                 slot.Bounce();
                 slot.SetAnimating(false);
             });
+        }
+        
+        private void OnDestroy()
+        {
+            LevelManager.OnLevelLoaded -= ResetBarSlots;
         }
     }
 }

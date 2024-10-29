@@ -51,11 +51,21 @@ namespace Gamecore
                 levelBuildPrefabs.Add(requirement.BuildingPrefab);
             }
             // Calculate areaStart and areaEnd based on the given platform object
-        
+            await RemoveOldLevelAssets();
             await PlaceLevelMap();
             await PlaceBuildings();
         }
-    
+
+        private Task RemoveOldLevelAssets()
+        {
+            if (_levelMap != null)
+            {
+                Destroy(_levelMap);
+            }
+            Debug.Log("Old level assets removed");
+            return Task.CompletedTask;
+        }
+
 
         private Task PlaceLevelMap()
         {
@@ -64,6 +74,7 @@ namespace Gamecore
             var bounds = _areaObject.GetComponent<MeshRenderer>().bounds;
             _areaStart = bounds.min;
             _areaEnd = bounds.max;
+            Debug.Log("Level map created: " + _currentLevelData.levelNumber);
             return Task.CompletedTask;
         }
 
@@ -91,11 +102,8 @@ namespace Gamecore
                     if (Physics.Raycast(ray, out var hit))
                     {
                         // Skip if it hits a Road or Building
-                        Debug.DrawRay(rayOrigin, Vector3.down * 100, Color.red, 10f);
                         if (hit.transform.CompareTag("Road") || hit.transform.CompareTag("Building"))
-                        {
                             continue;
-                        }
 
                         _nextBuilding = GetRandomBuildingPrefab();
                         _buildingSize = GetBuildingSize(_nextBuilding);
@@ -104,7 +112,7 @@ namespace Gamecore
                         // Check if the building area is fully within the Buildable area
                         if (IsAreaBuildable(hit.point))
                         {
-                            Instantiate(_nextBuilding, hit.point, _buildingRotation);
+                            Instantiate(_nextBuilding, hit.point, _buildingRotation, _levelMap.transform);
                         }
                     }
                 }
