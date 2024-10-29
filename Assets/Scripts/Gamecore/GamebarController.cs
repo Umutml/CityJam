@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using Managers;
 using UnityEngine;
 
 public class GamebarController : MonoBehaviour
@@ -51,6 +52,7 @@ public class GamebarController : MonoBehaviour
                 {
                     collectable.transform.DOMove(centeredPosition, _destroyAnimationDuration).SetEase(Ease.InBack).OnComplete(() =>
                     {
+                        LevelManager.Instance.AddBuilding(collectable.GetCollectableType());
                         collectable.DestroyCollectable();
                     });
 

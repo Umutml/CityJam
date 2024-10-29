@@ -11,13 +11,7 @@ public class Collectable : MonoBehaviour
     [SerializeField] private CollectableType collectableType;
 
     // Create a method to get the collectable type
-    public enum CollectableType
-    {
-        House,
-        Building,
-        TajMahal,
-        SkyTower,
-    }
+    
     
     public CollectableType GetCollectableType()
     {
