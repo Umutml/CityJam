@@ -79,7 +79,6 @@ namespace Managers
 
         private void CheckLevelCompletion()
         {
-            if (!IsLevelPlaying) return;
             foreach (var building in requiredBuildings)
             {
                 if (currentBuildings[building.Key] < building.Value)

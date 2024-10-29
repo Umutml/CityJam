@@ -65,6 +65,7 @@ namespace Gamecore
                         {
                             LevelManager.Instance.AddBuilding(collectable.GetCollectableType());
                             collectable.DestroyCollectable();
+                            OnCollectableDestroyed?.Invoke();
                         });
 
                         var slot = gamebarSlots.First(s => s.GetOccupyingObject() == collectable.gameObject);
@@ -73,7 +74,6 @@ namespace Gamecore
                     }
 
                     PlayDestroyFX(calculatedCenteredPosition, _destroyAnimationDuration);
-                    OnCollectableDestroyed?.Invoke();
                     break;
                 }
             }
@@ -153,7 +153,7 @@ namespace Gamecore
 
                             gamebarSlots[j].ClearOccupyingObject();
                             gamebarSlots[j].SetOccupied(false);
-                            break;
+                            return; // Exit the method after the first jump
                         }
                     }
                 }

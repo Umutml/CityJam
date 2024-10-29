@@ -1,5 +1,6 @@
 using DG.Tweening;
 using EPOOutline;
+using Managers;
 using UnityEngine;
 
 namespace Gamecore
@@ -13,7 +14,7 @@ namespace Gamecore
         [SerializeField] private CollectableTypes collectableTypes;
 
         // Create a method to get the collectable type
-
+        
 
         public CollectableTypes GetCollectableType()
         {
@@ -30,6 +31,7 @@ namespace Gamecore
             _outlineable = GetComponent<Outlinable>();
             _boxCollider = GetComponent<BoxCollider>();
             _outlineable.enabled = false;
+            LevelManager.OnLevelCompleted += DestroyCollectable;
         }
 
         public void Highlight(bool highlight, Color color = default)
@@ -104,6 +106,11 @@ namespace Gamecore
             // Reset the object state
             _outlineable.enabled = false;
             _boxCollider.enabled = true;
+        }
+        
+        private void OnDestroy()
+        {
+            LevelManager.OnLevelCompleted -= DestroyCollectable;
         }
     }
 }
