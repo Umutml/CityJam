@@ -100,7 +100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb615a66bdad6d4599c394e67b1d464, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collectableType: 3
+  collectableTypes: 2
 --- !u!65 &8946876199094100086
 BoxCollider:
   m_ObjectHideFlags: 0

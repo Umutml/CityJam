@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Gamecore;
 using UnityEngine;
@@ -6,12 +7,13 @@ namespace Managers
 {
     public class LevelManager : MonoBehaviour
     {
-        public static LevelManager Instance { get; private set; }
-
         [SerializeField] private LevelData[] levelDatas;
-        private Dictionary<CollectableTypes, int> requiredBuildings;
+
+        [HideInInspector] public LevelData currentLevelData;
         private Dictionary<CollectableTypes, int> currentBuildings;
-        public LevelData currentLevelData;    
+        private Dictionary<CollectableTypes, int> requiredBuildings;
+        public static LevelManager Instance { get; private set; }
+        public Action OnLevelLoaded;
 
         private void Awake()
         {
@@ -46,14 +48,14 @@ namespace Managers
             foreach (var buildingType in currentLevelData.buildingRequirements)
             {
                 requiredBuildings[buildingType.buildingTypes] = buildingType.requiredCount;
-                Debug.Log($"Level {currentLevelData.levelNumber} requires {buildingType.requiredCount} {buildingType.buildingTypes}");
+                Debug.Log($"Level {currentLevelData.levelNumber + 1} requires {buildingType.requiredCount} {buildingType.buildingTypes}");
                 currentBuildings[buildingType.buildingTypes] = 0;
             }
 
-            
             LevelCreator.Instance.CreateLevel(); // Add logic to load the map and create objects for the new level
+            OnLevelLoaded?.Invoke(); // Notify subscribers that the level has been loaded
             // Add logic to load the map and create objects for the new level
-            Debug.Log($"Loaded Level {currentLevelData.levelNumber}");
+            Debug.Log($"Loaded Level {currentLevelData.levelNumber + 1}"); // Level numbers are 0 based
         }
 
         private void UpdateCurrentLevelData(int levelIndex)
@@ -80,18 +82,29 @@ namespace Managers
                     return;
                 }
             }
+
+            IncrementLevel();
             LevelCompleted();
         }
-
+        private void IncrementLevel()
+        {
+            if (currentLevelData.levelNumber + 1 >= levelDatas.Length)
+            {
+                Debug.LogError("No more levels available");
+                return;
+            }
+            currentLevelData = levelDatas[currentLevelData.levelNumber + 1];
+        }
         private void LevelCompleted()
         {
             Debug.Log("Level Completed!");
             // Add additional logic for level completion here
 
             // Load the next level if available
-            if (currentLevelData.levelNumber + 1 < levelDatas.Length)
+            if (currentLevelData.levelNumber < levelDatas.Length)
             {
-                LoadLevel(currentLevelData.levelNumber + 1);
+                LoadLevel(currentLevelData.levelNumber);
+                OnLevelLoaded?.Invoke();
             }
             else
             {
