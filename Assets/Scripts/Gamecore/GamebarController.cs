@@ -3,19 +3,19 @@ using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 
-public class GamebarUIController : MonoBehaviour
+public class GamebarController : MonoBehaviour
 {
     [SerializeField] private GamebarSlot[] gamebarSlots;
-    private Camera _mainCamera;
     [SerializeField] private float slotHeightDiff = 10f;
     [SerializeField] private float slotZAxisDiff = 3f;
     private float _moveAnimationDuration = 1f;
     private float _destroyAnimationDuration = 0.3f;
     private float _JumpAnimationDuration = 0.3f;
 
+    [SerializeField] private Camera uiCamera;
+
     private void Awake()
     {
-        _mainCamera = Camera.main;
     }
 
     private void Update()
@@ -84,9 +84,9 @@ public class GamebarUIController : MonoBehaviour
 
     private void MoveCollectableToSlot(Collectable collectable, GamebarSlot slot)
     {
-        Vector3 screenPosition = RectTransformUtility.WorldToScreenPoint(_mainCamera, slot.transform.position);
+        Vector3 screenPosition = RectTransformUtility.WorldToScreenPoint(uiCamera, slot.transform.position);
         var centeredY = screenPosition.y - slotHeightDiff;
-        var worldPosition = _mainCamera.ScreenToWorldPoint(new Vector3(screenPosition.x, centeredY, _mainCamera.nearClipPlane + slotZAxisDiff));
+        var worldPosition = uiCamera.ScreenToWorldPoint(new Vector3(screenPosition.x, centeredY, uiCamera.nearClipPlane + slotZAxisDiff));
 
         slot.SetAnimating(true);
         collectable.transform.DOMove(worldPosition, _moveAnimationDuration).SetEase(Ease.InOutSine).OnComplete(() =>
@@ -130,9 +130,9 @@ public class GamebarUIController : MonoBehaviour
     
     private void DoJumpCollectableToSlot(Collectable collectable, GamebarSlot slot)
     {
-        Vector3 screenPosition = RectTransformUtility.WorldToScreenPoint(_mainCamera, slot.transform.position);
+        Vector3 screenPosition = RectTransformUtility.WorldToScreenPoint(uiCamera, slot.transform.position);
         var centeredY = screenPosition.y - slotHeightDiff;
-        var worldPosition = _mainCamera.ScreenToWorldPoint(new Vector3(screenPosition.x, centeredY, _mainCamera.nearClipPlane + slotZAxisDiff));
+        var worldPosition = uiCamera.ScreenToWorldPoint(new Vector3(screenPosition.x, centeredY, uiCamera.nearClipPlane + slotZAxisDiff));
 
         slot.SetAnimating(true);
         collectable.transform.DOJump(worldPosition,1,1, _JumpAnimationDuration).SetEase(Ease.InOutSine).OnComplete(() =>

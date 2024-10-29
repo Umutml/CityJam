@@ -52,6 +52,21 @@ public class Collectable : MonoBehaviour
             _outlineable.enabled = false;
         }
     }
+    
+    public void ChangeRenderLayerWithChilds(string layerName)
+    {
+        int layer = LayerMask.NameToLayer(layerName);
+        SetLayerRecursively(gameObject, layer);
+    }
+
+    private void SetLayerRecursively(GameObject obj, int newLayer) // Change the layer of the collectable and its childrens
+    {
+        obj.layer = newLayer;
+        foreach (Transform child in obj.transform)
+        {
+            SetLayerRecursively(child.gameObject, newLayer);
+        }
+    }
 
     public void TurnObject()
     {

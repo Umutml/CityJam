@@ -6,8 +6,6 @@ using UnityEngine;
 
 public class GamebarSlot : MonoBehaviour
 {
-    
-
     private GameObject _occupyingObject;
     private bool _sequenceActive;
     private RectTransform _rectTransform;

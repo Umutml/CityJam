@@ -218,6 +218,10 @@ MonoBehaviour:
   - {fileID: 7093856982201124934}
   - {fileID: 6984925684718026571}
   - {fileID: 9013830782843203402}
+  slotHeightDiff: 10
+  slotZAxisDiff: 3
+  mainCamera: {fileID: 0}
+  uiCamera: {fileID: 0}
 --- !u!1 &3943596385074759452
 GameObject:
   m_ObjectHideFlags: 0
