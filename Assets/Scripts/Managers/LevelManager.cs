@@ -48,7 +48,6 @@ namespace Managers
             foreach (var buildingType in currentLevelData.buildingRequirements)
             {
                 requiredBuildings[buildingType.buildingTypes] = buildingType.requiredCount;
-                Debug.Log($"Level {currentLevelData.levelNumber + 1} requires {buildingType.requiredCount} {buildingType.buildingTypes}");
                 currentBuildings[buildingType.buildingTypes] = 0;
             }
 

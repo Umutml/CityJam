@@ -11,9 +11,9 @@ namespace Gamecore
         [SerializeField] private GamebarSlot[] gamebarSlots;
         [SerializeField] private float slotHeightDiff = 10f;
         [SerializeField] private float slotZAxisDiff = 3f;
-        private float _destroyPositionUpDiff = 2f;
+        private float _destroyPositionUpDiff = 4f;
         private float _moveAnimationDuration = 1f;
-        private float _destroyAnimationDuration = 0.3f;
+        private float _destroyAnimationDuration = 0.4f;
         private float _JumpAnimationDuration = 0.3f;
 
         [SerializeField] private Camera uiCamera;

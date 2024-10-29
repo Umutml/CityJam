@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using DG.Tweening;
 using Managers;
 using UnityEngine;
 
@@ -10,7 +12,7 @@ namespace Gamecore
         public static LevelCreator Instance { get; private set; }
 
         private const float RayUpperDiff = 25f;
-        private const float RaySpacing = 0.1f; // Ray spacing
+        [SerializeField]private float RaySpacing = 0.1f; // Ray spacing
         private const float Margin = 1f; // Margin from the edges
     
         [SerializeField] private List<GameObject> levelBuildPrefabs;
@@ -23,6 +25,10 @@ namespace Gamecore
         private Quaternion _buildingRotation;
         private Vector3 _buildingSize;
         private GameObject _nextBuilding;
+        
+        private const string BuildableTag = "Buildable";
+        private const string RoadTag = "Road";
+        private const string BuildingTag = "Building";
 
         private void Awake()
         {
@@ -52,7 +58,9 @@ namespace Gamecore
             }
             // Calculate areaStart and areaEnd based on the given platform object
             await RemoveOldLevelAssets();
+            await Task.Delay(100);
             await PlaceLevelMap();
+            await Task.Delay(100);
             await PlaceBuildings();
         }
 
@@ -74,23 +82,81 @@ namespace Gamecore
             var bounds = _areaObject.GetComponent<MeshRenderer>().bounds;
             _areaStart = bounds.min;
             _areaEnd = bounds.max;
-            Debug.Log("Level map created: " + _currentLevelData.levelNumber);
+            Debug.Log("Level map created: " + (_currentLevelData.levelNumber + 1));
             return Task.CompletedTask;
         }
 
         private GameObject GetRandomBuildingPrefab()
         {
-            var randomChoice = Random.Range(0, 100);
-            if (randomChoice < 60)
-            {
-                return levelBuildPrefabs[1];
-            }
-
             var buildingPrefab = levelBuildPrefabs[Random.Range(0, levelBuildPrefabs.Count)];
             return buildingPrefab;
         }
 
-        private Task PlaceBuildings()
+        private async Task PlaceBuildings()
+        {
+            var levelManager = LevelManager.Instance;
+            var buildingRequirements = levelManager.currentLevelData.buildingRequirements;
+
+            // Shuffle the building requirements list
+            // buildingRequirements = buildingRequirements.OrderBy(x => Random.value).ToList();
+
+            // Place required buildings first
+            foreach (var requirement in buildingRequirements)
+            {
+                var buildingPrefab = requirement.BuildingPrefab;
+                var buildingCount = requirement.requiredCount + 1; // Place one extra building to ensure all required buildings are placed
+
+                for (int i = 0; i < buildingCount; i++)
+                {
+                    var placeBuild = PlaceRequiredBuilding(buildingPrefab);
+                    if (!placeBuild)
+                    {
+                        Debug.LogWarning("Not enough space to place all required buildings.");
+                        return;
+                    }
+                }
+            }
+            
+            Debug.Log("All required buildings placed");
+
+            // Place random buildings in the remaining space
+            for (var x = _areaStart.x + Margin; x <= _areaEnd.x - Margin; x += RaySpacing)
+            {
+                for (var z = _areaStart.z + Margin; z <= _areaEnd.z - Margin; z += RaySpacing)
+                {
+                    var rayOrigin = new Vector3(x, _areaStart.y + RayUpperDiff, z);
+                    var ray = new Ray(rayOrigin, Vector3.down); // Cast ray downwards
+            
+                    if (Physics.Raycast(ray, out var hit))
+                    {
+                        // Skip if it hits a Road or Building
+                        if (hit.transform.CompareTag(RoadTag) || hit.transform.CompareTag(BuildingTag))
+                            continue;
+            
+                        _nextBuilding = GetRandomBuildingPrefab();
+                        _buildingSize = GetBuildingSize(_nextBuilding);
+                        _buildingRotation = GetRandomRotation();
+            
+                        // Check if the building area is fully within the Buildable area
+                        if (IsAreaBuildable(hit.point))
+                        {
+                            CreateSingleBuild(_nextBuilding, hit.point, _buildingRotation, _levelMap.transform);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void CreateSingleBuild(GameObject buildingPrefab, Vector3 position, Quaternion rotation,Transform parent)
+        {
+            var tempBuild = Instantiate(buildingPrefab, position, rotation, parent.transform);
+            var firstYPosition = tempBuild.transform.position.y;
+            // Scale the building from zero to its original scale with a nice animation
+            tempBuild.transform.DOMoveY(firstYPosition,0.75f).SetEase(Ease.OutQuad).From(Vector3.down * 2);
+        }
+        
+
+        private bool PlaceRequiredBuilding(GameObject buildingPrefab)
         {
             for (var x = _areaStart.x + Margin; x <= _areaEnd.x - Margin; x += RaySpacing)
             {
@@ -102,22 +168,22 @@ namespace Gamecore
                     if (Physics.Raycast(ray, out var hit))
                     {
                         // Skip if it hits a Road or Building
-                        if (hit.transform.CompareTag("Road") || hit.transform.CompareTag("Building"))
+                        if (hit.transform.CompareTag(RoadTag) || hit.transform.CompareTag(BuildingTag))
                             continue;
 
-                        _nextBuilding = GetRandomBuildingPrefab();
-                        _buildingSize = GetBuildingSize(_nextBuilding);
+                        _buildingSize = GetBuildingSize(buildingPrefab);
                         _buildingRotation = GetRandomRotation();
 
                         // Check if the building area is fully within the Buildable area
                         if (IsAreaBuildable(hit.point))
                         {
-                            Instantiate(_nextBuilding, hit.point, _buildingRotation, _levelMap.transform);
+                            CreateSingleBuild(buildingPrefab, hit.point, _buildingRotation, _levelMap.transform);
+                            return true;
                         }
                     }
                 }
             }
-            return Task.CompletedTask;
+            return false;
         }
 
         private Quaternion GetRandomRotation()
@@ -168,7 +234,7 @@ namespace Gamecore
 
                 if (Physics.Raycast(ray, out var hit))
                 {
-                    if (!hit.collider.CompareTag("Buildable"))
+                    if (!hit.collider.CompareTag(BuildableTag))
                     {
                         return false; // If the ray hits something other than Buildable
                     }
@@ -185,7 +251,7 @@ namespace Gamecore
             var colliders = Physics.OverlapBox(center, halfExtents, _buildingRotation);
             foreach (var coll in colliders)
             {
-                if (coll.CompareTag("Building"))
+                if (coll.CompareTag(BuildingTag))
                 {
                     return false; // If there is an overlapping building
                 }
