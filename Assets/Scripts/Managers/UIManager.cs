@@ -16,6 +16,7 @@ namespace Managers
     
         [SerializeField] private GameObject goalSlotPrefab;
         [SerializeField] private Transform goalSlotParent;
+        [SerializeField] private TextMeshProUGUI levelNumberText;
     
         private List<GameObject> _goalSlots = new List<GameObject>();
     
@@ -43,6 +44,12 @@ namespace Managers
             HideGameOverPanel();
             ClearGoalSlots();
             CreateGoalSlots();
+            SetLevelText();
+        }
+
+        private void SetLevelText()
+        {
+            levelNumberText.text = $"Level {LevelManager.Instance.currentLevelData.levelNumber + 1}"; // Set the level number text + 1 because the level index starts from 0
         }
 
         private void CreateGoalSlots()

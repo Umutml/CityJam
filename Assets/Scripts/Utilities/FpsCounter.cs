@@ -16,8 +16,12 @@ namespace Utilities
             Application.targetFrameRate = 120;
 #endif
             Application.targetFrameRate = -1; // Set the target frame rate to the maximum
-        
-            if (!showFps) return;
+
+            if (!showFps)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
             _fpsText = GetComponent<TextMeshProUGUI>();
         }
 

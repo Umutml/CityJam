@@ -30,5 +30,5 @@ MonoBehaviour:
     BuildingPrefab: {fileID: 7102397348350304000, guid: 4a50dbb08e1e68d4eba8992f09ebb3dd, type: 3}
     BuldingSprite: {fileID: 810410565, guid: b1cb3adf566081542acb6343355b727d, type: 3}
   levelNumber: 2
-  levelTime: 255
+  levelTime: 240
   levelMap: {fileID: 1254510383124352568, guid: 1d0f390acea71374095bb13d4c87d659, type: 3}
