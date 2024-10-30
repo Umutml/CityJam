@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,18 +12,17 @@ namespace Gamecore
 {
     public class GamebarController : MonoBehaviour
     {
+        public static Action OnCollectableDestroyed;
         [SerializeField] private GamebarSlot[] gamebarSlots;
         [SerializeField] private float slotHeightDiff = 10f;
         [SerializeField] private float slotZAxisDiff = 3f;
-        private float _destroyPositionUpDiff = 4f;
-        private float _moveAnimationDuration = 1f;
-        private float _destroyAnimationDuration = 0.4f;
-        private float _JumpAnimationDuration = 0.3f;
 
         [SerializeField] private Camera uiCamera;
         [SerializeField] private Object destroyParticleFX;
-
-        public static Action OnCollectableDestroyed;
+        private readonly float _destroyAnimationDuration = 0.4f;
+        private readonly float _destroyPositionUpDiff = 4f;
+        private readonly float _JumpAnimationDuration = 0.3f;
+        private readonly float _moveAnimationDuration = 1f;
 
         private void Awake()
         {
@@ -35,21 +35,27 @@ namespace Gamecore
             ShiftCollectablesLeft();
         }
 
+        private void OnDestroy()
+        {
+            LevelManager.OnLevelLoaded -= ResetBarSlots;
+        }
+
         private void CheckFor3SameCollectables()
         {
             var collecteds = new List<Collectable>();
             foreach (var slot in gamebarSlots)
             {
-                if (slot.IsOccupied && !slot.IsAnimating())
+                if (slot.IsOccupied && !slot.GetIsAnimating())
                 {
                     if (slot.GetOccupyingObject() == null) continue;
                     collecteds.Add(slot.GetOccupyingObject().GetComponent<Collectable>());
                 }
             }
-            
+
             if (collecteds.Count < 3)
                 return;
-            
+
+            bool merged = false;
 
             for (var i = 0; i < collecteds.Count; i++)
             {
@@ -58,6 +64,7 @@ namespace Gamecore
 
                 if (sameTypeCollectables.Count == 3)
                 {
+                    merged = true;
                     var centeredPosition = sameTypeCollectables.Aggregate(Vector3.zero, (current, collectable) => current + collectable.transform.position) / 3;
                     var calculatedCenteredPosition = centeredPosition + Vector3.up * _destroyPositionUpDiff;
                     foreach (var collectable in sameTypeCollectables)
@@ -78,6 +85,18 @@ namespace Gamecore
                     break;
                 }
             }
+
+            if (!merged && IsAllSlotsOccupied())
+            {
+                if(LevelManager.IsLevelPlaying)
+                    GameOver();
+            }
+        }
+
+        private void GameOver()
+        {
+            LevelManager.Instance.GameOver();
+            Debug.Log("Game Over");
         }
 
         private void ResetBarSlots()
@@ -94,11 +113,6 @@ namespace Gamecore
             await Task.Delay((int)(duration * 1000));
             var particle = Instantiate(destroyParticleFX, position, Quaternion.identity);
             Destroy(particle, duration);
-        }
-
-        public GamebarSlot[] GetGamebarElements()
-        {
-            return gamebarSlots;
         }
 
         public void AddCollectableToSlot(Collectable collectable)
@@ -144,7 +158,7 @@ namespace Gamecore
                 {
                     for (var j = i + 1; j < gamebarSlots.Length; j++)
                     {
-                        if (gamebarSlots[j].IsOccupied && !gamebarSlots[j].IsAnimating())
+                        if (gamebarSlots[j].IsOccupied && !gamebarSlots[j].GetIsAnimating())
                         {
                             var collectable = gamebarSlots[j].GetOccupyingObject().GetComponent<Collectable>();
                             DoJumpCollectableToSlot(collectable, gamebarSlots[i]);
@@ -161,6 +175,13 @@ namespace Gamecore
             }
         }
 
+        private bool IsAllSlotsOccupied()
+        {
+            var allSlotsOccupied = gamebarSlots.All(slot => slot.IsOccupied); // Check if all slots are occupied
+            var isAnySlotAnimating = gamebarSlots.Any(slot => slot.GetIsAnimating()); // Check if any slot is animating
+            return allSlotsOccupied && !isAnySlotAnimating;
+        }
+        
         private void DoJumpCollectableToSlot(Collectable collectable, GamebarSlot slot)
         {
             Vector3 screenPosition = RectTransformUtility.WorldToScreenPoint(uiCamera, slot.transform.position);
@@ -175,11 +196,6 @@ namespace Gamecore
                 slot.Bounce();
                 slot.SetAnimating(false);
             });
-        }
-
-        private void OnDestroy()
-        {
-            LevelManager.OnLevelLoaded -= ResetBarSlots;
         }
     }
 }

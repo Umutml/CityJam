@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using Managers;
 using TMPro;
 using UnityEngine;
@@ -22,6 +23,8 @@ public class UIManager : MonoBehaviour
     private void ShowGameOverPanel()
     {
         gameOverPanel.SetActive(true); // Show the game over screen
+        var gameOverCanvGroup = gameOverPanel.GetComponent<CanvasGroup>();
+        gameOverCanvGroup.DOFade(1f, 0.75f).From(0f).SetEase(Ease.Linear);
     }
     
     private void HideGameOverPanel()
@@ -33,6 +36,8 @@ public class UIManager : MonoBehaviour
     {
         // Show the level completed screen
         levelCompletedPanel.SetActive(true);
+        var levelCompletedCanvGroup = levelCompletedPanel.GetComponent<CanvasGroup>();
+        levelCompletedCanvGroup.DOFade(1f, 0.5f).From(0f).SetEase(Ease.Linear);
     }
 
     private void HideLevelCompletedPanel()

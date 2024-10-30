@@ -22,7 +22,7 @@ namespace Gamecore
             _isAnimating = isAnimating;
         }
 
-        public bool IsAnimating()
+        public bool GetIsAnimating()
         {
             return _isAnimating;
         }

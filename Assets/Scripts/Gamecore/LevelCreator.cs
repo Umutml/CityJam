@@ -39,20 +39,7 @@ namespace Gamecore
             {
                 Destroy(gameObject);
             }
-
-            LevelManager.OnLevelCompleted += OnLevelCompletedHandler;
         }
-
-        private void OnDestroy()
-        {
-            LevelManager.OnLevelCompleted -= OnLevelCompletedHandler;
-        }
-
-        private void OnLevelCompletedHandler()
-        {
-            // RemoveOldLevelAssets().Wait();
-        }
-
 
         public async void CreateLevel()
         {

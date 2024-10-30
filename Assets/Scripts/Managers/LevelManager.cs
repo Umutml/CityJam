@@ -126,6 +126,7 @@ namespace Managers
         public void GameOver()
         {
             OnGameOver?.Invoke();
+            IsLevelPlaying = false;
         }
         
         public void RestartLevel()
