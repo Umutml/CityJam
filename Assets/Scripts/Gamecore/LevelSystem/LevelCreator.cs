@@ -99,14 +99,14 @@ namespace Gamecore
             foreach (var requirement in buildingRequirements)
             {
                 var buildingPrefab = requirement.BuildingPrefab;
-                var buildingCount = requirement.requiredCount + 2; // Place two extra building to ensure all required buildings are placed
+                var buildingCount = requirement.requiredCount + 1; // Place two extra building to ensure all required buildings are placed
 
                 for (var i = 0; i < buildingCount; i++)
                 {
                     var placeBuild = PlaceRequiredBuilding(buildingPrefab);
                     if (!placeBuild)
                     {
-                        Debug.LogError("Not enough space to place all required buildings.");
+                        Debug.LogWarning("Not enough space to place all required buildings. Place the remaining buildings randomly.");
                         return Task.CompletedTask;
                     }
                 }
