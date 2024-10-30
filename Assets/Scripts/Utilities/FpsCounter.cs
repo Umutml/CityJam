@@ -5,20 +5,23 @@ namespace Utilities
 {
     public class FpsCounter : MonoBehaviour
     {
+        [SerializeField] private bool showFps;
         private float _deltaTime;
         private TextMeshProUGUI _fpsText;
-        [SerializeField] private bool showFps;
 
         private void Start()
         {
-            Application.targetFrameRate = -1; // Set the target frame rate to the maximum
-
+#if !UNITY_EDITOR
+            Application.targetFrameRate = 120;
+            QualitySettings.vSyncCount = 0;
+#endif
             if (!showFps)
             {
                 gameObject.SetActive(false);
                 Destroy(this, 0.2f);
                 return;
             }
+
             _fpsText = GetComponent<TextMeshProUGUI>();
         }
 
