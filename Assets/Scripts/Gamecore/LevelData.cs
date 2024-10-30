@@ -15,6 +15,6 @@ public class BuildingRequirement
 {
     public CollectableTypes buildingTypes;
     public int requiredCount;
-    public Image BuildingImage;
     public GameObject BuildingPrefab;
+    public Sprite BuldingSprite;
 }
