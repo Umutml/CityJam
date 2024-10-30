@@ -7,7 +7,7 @@ using Managers;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Gamecore
+namespace Gamecore.Gamebar
 {
     public class GamebarController : MonoBehaviour
     {
@@ -44,7 +44,7 @@ namespace Gamecore
         {
             var collecteds = gamebarSlots
                 .Where(slot => slot.IsOccupied && !slot.GetIsAnimating() && slot.GetOccupyingObject() != null)
-                .Select(slot => slot.GetOccupyingObject().GetComponent<Collectable>())
+                .Select(slot => slot.GetOccupyingObject().GetComponent<Collectable.Collectable>())
                 .ToList();
 
             if (collecteds.Count < 3) return;
@@ -63,7 +63,7 @@ namespace Gamecore
                 GameOver();
         }
 
-        private void MergeCollectables(List<Collectable> collectables)
+        private void MergeCollectables(List<Collectable.Collectable> collectables)
         {
             var centerPos = collectables.Aggregate(Vector3.zero, (current, c) => current + c.transform.position) / 3;
             var targetPos = centerPos + Vector3.up * DestroyPositionUpDiff;
@@ -107,7 +107,7 @@ namespace Gamecore
             Destroy(particle, duration);
         }
 
-        public void AddCollectableToSlot(Collectable collectable)
+        public void AddCollectableToSlot(Collectable.Collectable collectable)
         {
             var firstEmptySlot = GetFirstEmptySlot();
             if (firstEmptySlot == null)
@@ -121,7 +121,7 @@ namespace Gamecore
             firstEmptySlot.SetOccupied(true);
         }
 
-        private void MoveCollectableToSlot(Collectable collectable, GamebarSlot slot)
+        private void MoveCollectableToSlot(Collectable.Collectable collectable, GamebarSlot slot)
         {
             var screenPos = RectTransformUtility.WorldToScreenPoint(uiCamera, slot.transform.position);
             var worldPos = uiCamera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y - slotHeightDiff, uiCamera.nearClipPlane + slotZAxisDiff));
@@ -151,7 +151,7 @@ namespace Gamecore
                     {
                         if (gamebarSlots[j].IsOccupied && !gamebarSlots[j].GetIsAnimating())
                         {
-                            var collectable = gamebarSlots[j].GetOccupyingObject().GetComponent<Collectable>();
+                            var collectable = gamebarSlots[j].GetOccupyingObject().GetComponent<Collectable.Collectable>();
                             DoJumpCollectableToSlot(collectable, gamebarSlots[i]);
 
                             gamebarSlots[i].SetOccupyingObject(collectable.gameObject);
@@ -171,7 +171,7 @@ namespace Gamecore
             return gamebarSlots.All(slot => slot.IsOccupied) && !gamebarSlots.Any(slot => slot.GetIsAnimating());
         }
 
-        private void DoJumpCollectableToSlot(Collectable collectable, GamebarSlot slot)
+        private void DoJumpCollectableToSlot(Collectable.Collectable collectable, GamebarSlot slot)
         {
             var screenPos = RectTransformUtility.WorldToScreenPoint(uiCamera, slot.transform.position);
             var worldPos = uiCamera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y - slotHeightDiff, uiCamera.nearClipPlane + slotZAxisDiff));

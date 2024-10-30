@@ -5,7 +5,7 @@ using Managers;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Gamecore
+namespace Gamecore.LevelSystem
 {
     public class LevelCreator : MonoBehaviour
     {

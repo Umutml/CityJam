@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Gamecore;
+using Gamecore.Gamebar;
+using Gamecore.LevelSystem;
 using UnityEngine;
 
 namespace Managers

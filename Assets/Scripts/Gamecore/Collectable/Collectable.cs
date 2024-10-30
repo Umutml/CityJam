@@ -3,7 +3,7 @@ using EPOOutline;
 using Managers;
 using UnityEngine;
 
-namespace Gamecore
+namespace Gamecore.Collectable
 {
     public class Collectable : MonoBehaviour
     {

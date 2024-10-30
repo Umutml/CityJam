@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Gamecore
+namespace Gamecore.Gamebar
 {
     /// <summary>
     ///     Handles the picking of collectable items in the game by clicking on them
@@ -13,7 +13,7 @@ namespace Gamecore
         private LayerMask _collectablesLayerMask;
         private GamebarController _gamebarController;
 
-        private Collectable _selectedItem;
+        private Collectable.Collectable _selectedItem;
         private Camera _mainCamera;
         private const float CooldownTime = 0.15f; // Little cooldown time to prevent double clicks and click spamming
         private float _lastClickTime;
@@ -37,7 +37,7 @@ namespace Gamecore
                 RaycastHit hit;
                 if (Physics.Raycast(ray, out hit, Mathf.Infinity, _collectablesLayerMask))
                 {
-                    var collectableItem = hit.transform.GetComponent<Collectable>();
+                    var collectableItem = hit.transform.GetComponent<Collectable.Collectable>();
                     if (collectableItem == null)
                         return;
                     _selectedItem = collectableItem;
@@ -50,7 +50,7 @@ namespace Gamecore
             }
         }
 
-        private async void ProcessSelectedObject(Collectable collectable)
+        private async void ProcessSelectedObject(Collectable.Collectable collectable)
         {
             var emptySlot = _gamebarController.GetFirstEmptySlot();
 

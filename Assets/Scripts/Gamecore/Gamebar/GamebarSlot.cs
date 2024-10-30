@@ -1,7 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-namespace Gamecore
+namespace Gamecore.Gamebar
 {
     public class GamebarSlot : MonoBehaviour
     {
