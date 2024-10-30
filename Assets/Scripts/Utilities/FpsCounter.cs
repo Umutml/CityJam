@@ -11,10 +11,6 @@ namespace Utilities
 
         private void Start()
         {
-        
-#if UNITY_ANDROID || UNITY_IOS 
-            Application.targetFrameRate = 120;
-#endif
             Application.targetFrameRate = -1; // Set the target frame rate to the maximum
 
             if (!showFps)
