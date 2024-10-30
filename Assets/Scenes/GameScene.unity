@@ -990,7 +990,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3582173550007677086, guid: 9ad9bfa6f788f844fb3bc726bfeb4f00, type: 3}
       propertyPath: RaySpacing
-      value: 0.6
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3998580679109229374, guid: 9ad9bfa6f788f844fb3bc726bfeb4f00, type: 3}
       propertyPath: m_Name
