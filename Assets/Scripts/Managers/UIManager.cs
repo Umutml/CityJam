@@ -92,7 +92,10 @@ public class UIManager : MonoBehaviour
     
     private void HideGameOverPanel()
     {
-        gameOverPanel.SetActive(false); // Hide the game over screen
+        gameOverPanel.GetComponent<CanvasGroup>().DOFade(0f, 0.5f).SetEase(Ease.Linear).OnComplete(() =>
+        {
+            gameOverPanel.SetActive(false);
+        });
     }
 
     private void ShowLevelCompletedPanel()
@@ -105,13 +108,13 @@ public class UIManager : MonoBehaviour
 
     private void HideLevelCompletedPanel()
     {
-        // Hide the level completed screen
-        levelCompletedPanel.SetActive(false);
+        levelCompletedPanel.GetComponent<CanvasGroup>().DOFade(0f, 0.5f).SetEase(Ease.Linear).OnComplete(() =>
+        {
+            levelCompletedPanel.SetActive(false);
+        });
     }
-
     
-    
-    public Sprite GetBuildingSprite(CollectableTypes buildingType)
+    private Sprite GetBuildingSprite(CollectableTypes buildingType)
     {
         foreach (var building in LevelManager.Instance.currentLevelData.buildingRequirements)
         {

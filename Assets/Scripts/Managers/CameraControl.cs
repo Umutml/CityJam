@@ -4,9 +4,8 @@ namespace Managers
 {
     public class CameraControl : MonoBehaviour
     {
-        private const float DoubleTapTime = 0.3f;
         [SerializeField] private float scrollSpeed = 10f;
-        [SerializeField] private float zoomSpeed = 0.5f;
+        [SerializeField] private float zoomSpeed = 0.2f;
         [SerializeField] private float minZoom = 5f;
         [SerializeField] private float maxZoom = 20f;
 

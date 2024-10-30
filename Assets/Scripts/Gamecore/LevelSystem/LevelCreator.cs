@@ -106,7 +106,7 @@ namespace Gamecore
                     var placeBuild = PlaceRequiredBuilding(buildingPrefab);
                     if (!placeBuild)
                     {
-                        Debug.LogWarning("Not enough space to place all required buildings.");
+                        Debug.LogError("Not enough space to place all required buildings.");
                         return Task.CompletedTask;
                     }
                 }
