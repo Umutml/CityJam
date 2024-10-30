@@ -48,7 +48,7 @@ namespace Gamecore
             }
             else
             {
-                _outlineable.enabled = false;
+                if (_outlineable) _outlineable.enabled = false;
             }
         }
 
