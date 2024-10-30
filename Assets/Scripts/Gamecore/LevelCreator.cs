@@ -95,7 +95,7 @@ namespace Gamecore
             var buildingRequirements = levelManager.currentLevelData.buildingRequirements;
 
             // Shuffle the building requirements list
-            // buildingRequirements = buildingRequirements.OrderBy(x => Random.value).ToList();
+            
 
             // Place required buildings first
             foreach (var requirement in buildingRequirements)

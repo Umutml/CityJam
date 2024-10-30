@@ -543,6 +543,7 @@ GameObject:
   - component: {fileID: 1083175414}
   - component: {fileID: 1083175416}
   - component: {fileID: 1083175415}
+  - component: {fileID: 1083175417}
   m_Layer: 6
   m_Name: FpsCounter
   m_TagString: Untagged
@@ -566,7 +567,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 26.13, y: -113.1}
+  m_AnchoredPosition: {x: 26.130005, y: -113.099976}
   m_SizeDelta: {x: 381.7, y: 121.48}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1083175415
@@ -666,6 +667,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1083175413}
   m_CullTransparentMesh: 1
+--- !u!114 &1083175417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1083175413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e757f540db7c4b640b670f53fcd5aacf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &1218679319 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5875330462144945787, guid: 0ef9d70cf70d80940990d2ac4f4db9ca, type: 3}

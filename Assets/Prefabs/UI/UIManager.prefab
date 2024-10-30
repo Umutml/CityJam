@@ -294,8 +294,8 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2472426994053761969}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.00007045503}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.00023356265}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -304,7 +304,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.00010568255, y: -215.74}
+  m_AnchoredPosition: {x: 0.000024329442, y: -233.9}
   m_SizeDelta: {x: 387.7, y: 107.099976}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2945348914477848914
@@ -391,7 +391,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1265670500568385874}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: OnNextButtonClicked
+        m_MethodName: OnRestartButtonClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -720,10 +720,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 7116557927841910320}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1080, y: 1920}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &763983707041266057
 CanvasRenderer:
@@ -782,8 +782,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 96.3
-  m_fontSizeBase: 96.3
+  m_fontSize: 84.8
+  m_fontSizeBase: 84.8
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
