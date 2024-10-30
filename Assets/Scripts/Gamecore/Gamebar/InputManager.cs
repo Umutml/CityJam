@@ -65,7 +65,7 @@ namespace Gamecore.Gamebar
 
             collectable.Highlight(true);
             collectable.TurnObject();
-            collectable.ScaleObject();
+            collectable.ScaleObject(); // Scale effect for object when clicked
             collectable.DisableCollider();
             collectable.ChangeRenderLayerWithChilds("UICamera");
 

@@ -127,7 +127,11 @@ namespace Gamecore.Gamebar
             var worldPos = uiCamera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y - slotHeightDiff, uiCamera.nearClipPlane + slotZAxisDiff));
 
             slot.SetAnimating(true);
-            collectable.transform.DOMove(worldPos, MoveAnimationDuration).SetEase(Ease.InOutSine).OnComplete(() =>
+            
+            Sequence sequence = DOTween.Sequence();
+            sequence.Append(collectable.transform.DOMoveY(collectable.transform.position.y + 2, 0.2f).SetEase(Ease.OutSine));
+            sequence.Append(collectable.transform.DOMove(worldPos, MoveAnimationDuration).SetEase(Ease.InOutSine));
+            sequence.OnComplete(() =>
             {
                 collectable.Highlight(false);
                 collectable.Bounce();
