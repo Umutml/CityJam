@@ -10,18 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 476f2ee1c870571439720127272ba235, type: 3}
-  m_Name: Level2
+  m_Name: Level3
   m_EditorClassIdentifier: 
   buildingRequirements:
   - buildingTypes: 0
-    requiredCount: 3
+    requiredCount: 8
     BuildingPrefab: {fileID: 3361853144019719849, guid: 31f2e8175a3bfa2468c9b00bb249b47d, type: 3}
   - buildingTypes: 1
     requiredCount: 6
     BuildingPrefab: {fileID: 1482912660565672094, guid: 9992a4f3ab9aa454a879f83568db612d, type: 3}
   - buildingTypes: 2
-    requiredCount: 6
+    requiredCount: 3
     BuildingPrefab: {fileID: 1684121697994238340, guid: efd44dff36028924ea291ac6ddfff781, type: 3}
-  levelNumber: 1
+  - buildingTypes: 3
+    requiredCount: 5
+    BuildingPrefab: {fileID: 7102397348350304000, guid: 4a50dbb08e1e68d4eba8992f09ebb3dd, type: 3}
+  levelNumber: 2
   levelTime: 255
-  levelMap: {fileID: 7142030060162819390, guid: 0cbef0d7c8eddd044ac798f81abce84d, type: 3}
+  levelMap: {fileID: 1254510383124352568, guid: 1d0f390acea71374095bb13d4c87d659, type: 3}

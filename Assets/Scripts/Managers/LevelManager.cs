@@ -16,6 +16,7 @@ namespace Managers
         public static LevelManager Instance { get; private set; }
         public static Action OnLevelLoaded;
         public static Action OnLevelCompleted;
+        public static Action OnGameOver;
         public static bool IsLevelPlaying { get; private set; }
 
         private void Awake()
@@ -120,6 +121,16 @@ namespace Managers
             {
                 Debug.Log("All levels completed!");
             }
+        }
+        
+        public void GameOver()
+        {
+            OnGameOver?.Invoke();
+        }
+        
+        public void RestartLevel()
+        {
+            LoadLevel(currentLevelData.levelNumber);
         }
 
         private void OnDestroy()

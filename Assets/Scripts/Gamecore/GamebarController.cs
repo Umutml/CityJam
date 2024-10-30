@@ -46,9 +46,10 @@ namespace Gamecore
                     collecteds.Add(slot.GetOccupyingObject().GetComponent<Collectable>());
                 }
             }
-
+            
             if (collecteds.Count < 3)
                 return;
+            
 
             for (var i = 0; i < collecteds.Count; i++)
             {
