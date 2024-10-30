@@ -9,7 +9,7 @@ namespace Utilities
         private TextMeshProUGUI _fpsText;
         [SerializeField] private bool showFps;
 
-        private void Awake()
+        private void Start()
         {
         
 #if UNITY_ANDROID || UNITY_IOS 
@@ -20,6 +20,7 @@ namespace Utilities
             if (!showFps)
             {
                 gameObject.SetActive(false);
+                Destroy(this, 0.2f);
                 return;
             }
             _fpsText = GetComponent<TextMeshProUGUI>();
