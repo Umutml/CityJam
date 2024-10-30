@@ -89,13 +89,11 @@ namespace Gamecore
             return buildingPrefab;
         }
 
-        private async Task PlaceBuildings()
+        private Task PlaceBuildings()
         {
             var levelManager = LevelManager.Instance;
             var buildingRequirements = levelManager.currentLevelData.buildingRequirements;
 
-            // Shuffle the building requirements list
-            
 
             // Place required buildings first
             foreach (var requirement in buildingRequirements)
@@ -109,7 +107,7 @@ namespace Gamecore
                     if (!placeBuild)
                     {
                         Debug.LogWarning("Not enough space to place all required buildings.");
-                        return;
+                        return Task.CompletedTask;
                     }
                 }
             }
@@ -142,6 +140,8 @@ namespace Gamecore
                     }
                 }
             }
+
+            return Task.CompletedTask;
         }
 
         private void CreateSingleBuild(GameObject buildingPrefab, Vector3 position, Quaternion rotation, Transform parent)

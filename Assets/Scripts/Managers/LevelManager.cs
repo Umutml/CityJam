@@ -11,8 +11,8 @@ namespace Managers
         [SerializeField] private LevelData[] levelDatas;
 
         [HideInInspector] public LevelData currentLevelData;
-        private Dictionary<CollectableTypes, int> currentBuildings;
-        private Dictionary<CollectableTypes, int> requiredBuildings;
+        public Dictionary<CollectableTypes, int> currentBuildings;
+        public Dictionary<CollectableTypes, int> requiredBuildings;
         public static LevelManager Instance { get; private set; }
         public static Action OnLevelLoaded;
         public static Action OnLevelCompleted;
@@ -138,5 +138,7 @@ namespace Managers
         {
             GamebarController.OnCollectableDestroyed -= CheckLevelCompletion;
         }
+        
+        
     }
 }

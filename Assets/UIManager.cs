@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
+using Gamecore;
 using Managers;
 using TMPro;
 using UnityEngine;
@@ -11,13 +13,74 @@ public class UIManager : MonoBehaviour
 {
     [SerializeField] private GameObject levelCompletedPanel;
     [SerializeField] private GameObject gameOverPanel;
-
+    
+    [SerializeField] private GameObject goalSlotPrefab;
+    [SerializeField] private Transform goalSlotParent;
+    
+    private List<GameObject> _goalSlots = new List<GameObject>();
+    
     private void Awake()
     {
-        LevelManager.OnLevelCompleted += ShowLevelCompletedPanel;
-        LevelManager.OnLevelLoaded += HideLevelCompletedPanel;
-        LevelManager.OnLevelLoaded += HideGameOverPanel;
-        LevelManager.OnGameOver += ShowGameOverPanel;
+        LevelManager.OnLevelCompleted += LevelCompletedHandler;
+        LevelManager.OnLevelLoaded += LevelLoadedHandler;
+        LevelManager.OnGameOver += GameOverHandler;
+        GamebarController.OnCollectableDestroyed += UpdateGoalSlots;
+    }
+    
+    private void GameOverHandler()
+    {
+        ShowGameOverPanel();
+    }
+    
+    private void LevelCompletedHandler()
+    {
+        ShowLevelCompletedPanel();
+    }
+    
+    private void LevelLoadedHandler()
+    {
+        HideLevelCompletedPanel();
+        HideGameOverPanel();
+        ClearGoalSlots();
+        CreateGoalSlots();
+    }
+
+    private void CreateGoalSlots()
+    {
+        var requiredBuildings = LevelManager.Instance.requiredBuildings;
+        foreach (var buildingType in requiredBuildings)
+        {
+            var goalSlot = Instantiate(goalSlotPrefab, goalSlotParent);
+            _goalSlots.Add(goalSlot);
+            var goalSlotImage = goalSlot.transform.Find("Image").GetComponent<Image>();
+            var goalSlotCount = goalSlot.transform.Find("Count").GetComponent<TextMeshProUGUI>();
+            goalSlotImage.sprite = GetBuildingSprite(buildingType.Key);
+            goalSlotCount.text = buildingType.Value.ToString();
+        }
+    }
+    
+    private void UpdateGoalSlots()
+    {
+        var currentBuildings = LevelManager.Instance.currentBuildings;
+        for (var i = 0; i < _goalSlots.Count; i++)
+        {
+            var goalSlot = _goalSlots[i];
+            var buildingType = LevelManager.Instance.requiredBuildings.Keys.ElementAt(i);
+            var currentBuildingCount = currentBuildings[buildingType];
+            var requiredBuildingCount = LevelManager.Instance.requiredBuildings[buildingType];
+            var goalSlotCount = goalSlot.transform.Find("Count").GetComponent<TextMeshProUGUI>();
+            var remainingCount = requiredBuildingCount - currentBuildingCount; // Calculate the remaining count
+            goalSlotCount.text = remainingCount > 0 ? remainingCount.ToString() : "0";
+        }
+    }
+    
+    private void ClearGoalSlots()
+    {
+        foreach (var goalSlot in _goalSlots)
+        {
+            Destroy(goalSlot);
+        }
+        _goalSlots.Clear();
     }
 
     private void ShowGameOverPanel()
@@ -46,9 +109,18 @@ public class UIManager : MonoBehaviour
         levelCompletedPanel.SetActive(false);
     }
 
-    private void UpdateGoalProgress()
+    
+    
+    public Sprite GetBuildingSprite(CollectableTypes buildingType)
     {
-        // Update the UI to show the progress towards the level goal
+        foreach (var building in LevelManager.Instance.currentLevelData.buildingRequirements)
+        {
+            if (building.buildingTypes == buildingType)
+            {
+                return building.BuldingSprite;
+            }
+        }
+        return null;
     }
 
     public void OnNextButtonClicked()
@@ -63,8 +135,9 @@ public class UIManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        LevelManager.OnGameOver -= ShowGameOverPanel;
-        LevelManager.OnLevelCompleted -= ShowLevelCompletedPanel;
-        LevelManager.OnLevelLoaded -= HideLevelCompletedPanel;
+        LevelManager.OnLevelCompleted -= LevelCompletedHandler;
+        LevelManager.OnLevelLoaded -= LevelLoadedHandler;
+        LevelManager.OnGameOver -= GameOverHandler;
+        GamebarController.OnCollectableDestroyed -= UpdateGoalSlots;
     }
 }
