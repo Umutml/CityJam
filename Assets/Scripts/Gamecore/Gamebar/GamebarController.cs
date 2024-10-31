@@ -129,7 +129,7 @@ namespace Gamecore.Gamebar
             slot.SetAnimating(true);
             
             Sequence sequence = DOTween.Sequence();
-            sequence.Append(collectable.transform.DOMoveY(collectable.transform.position.y + 2, 0.2f).SetEase(Ease.OutSine));
+            sequence.Append(collectable.transform.DOMoveY(collectable.transform.position.y + 1, 0.2f).SetEase(Ease.OutSine));
             sequence.Append(collectable.transform.DOMove(worldPos, MoveAnimationDuration).SetEase(Ease.InOutSine));
             sequence.OnComplete(() =>
             {
