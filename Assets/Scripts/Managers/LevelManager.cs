@@ -43,7 +43,7 @@ namespace Managers
 
         private void LoadLevel(int levelIndex)
         {
-            if (levelIndex < 0 || levelIndex >= levelDatas.Length)
+            if (levelIndex < 0)
             {
                 Debug.LogError("Invalid level index");
                 return;

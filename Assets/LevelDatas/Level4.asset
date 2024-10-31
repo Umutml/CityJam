@@ -28,7 +28,7 @@ MonoBehaviour:
   - buildingTypes: 4
     requiredCount: 3
     BuildingPrefab: {fileID: 618552028803212089, guid: 77429600b3fc69e43a98e31b1b156891, type: 3}
-    BuldingSprite: {fileID: 1581336688, guid: b1cb3adf566081542acb6343355b727d, type: 3}
+    BuldingSprite: {fileID: 274014414, guid: 89eb719b395b8484fbdf3bf981c1753b, type: 3}
   levelNumber: 3
   levelTime: 220
   levelMap: {fileID: 3741361359647725513, guid: 1e04e981fc8b1e2469d3c1a03d2742bd, type: 3}
