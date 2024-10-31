@@ -50,3 +50,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 783716081f2430a4386c1ca684adbd66, type: 2}
   - {fileID: 11400000, guid: 5102079973f5b5e42aa04644150a8faf, type: 2}
   currentLevelData: {fileID: 0}
+  firstLoadLevelIndex: 0

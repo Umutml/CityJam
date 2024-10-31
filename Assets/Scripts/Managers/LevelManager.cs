@@ -20,6 +20,9 @@ namespace Managers
         public static Action OnLevelCompleted;
         public static Action OnGameOver;
         public static bool IsLevelPlaying { get; private set; }
+        
+        [Header("Debug")]
+        [SerializeField] private int firstLoadLevelIndex = 0;
 
         private void Awake()
         {
@@ -38,7 +41,7 @@ namespace Managers
 
         private void Start()
         {
-            LoadLevel(levelDatas[0].levelNumber); // Load the first level
+            LoadLevel(levelDatas[firstLoadLevelIndex].levelNumber); // Load the first level
         }
 
         private void LoadLevel(int levelIndex)
