@@ -46,7 +46,7 @@ namespace Managers
             if (!_isCounting) return;
             _levelTime -= Time.deltaTime;
             var timeSpan = TimeSpan.FromSeconds(_levelTime);
-            _timeText.text = $"Time {timeSpan:mm\\:ss}";
+            _timeText.text = $"<size=90%>Time</size> {timeSpan:mm\\:ss}";
             if (_levelTime <= 0) // If the level timer reaches 0, the game is over
             {
                 LevelManager.Instance.GameOver();

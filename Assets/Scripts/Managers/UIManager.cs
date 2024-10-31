@@ -62,7 +62,7 @@ namespace Managers
                 var goalSlotImage = goalSlot.transform.Find("Image").GetComponent<Image>();
                 var goalSlotCount = goalSlot.transform.Find("Count").GetComponent<TextMeshProUGUI>();
                 goalSlotImage.sprite = GetBuildingSprite(buildingType.Key);
-                goalSlotCount.text = buildingType.Value.ToString();
+                goalSlotCount.text = "x" + buildingType.Value;
             }
         }
     
@@ -77,7 +77,7 @@ namespace Managers
                 var requiredBuildingCount = LevelManager.Instance.requiredBuildings[buildingType];
                 var goalSlotCount = goalSlot.transform.Find("Count").GetComponent<TextMeshProUGUI>();
                 var remainingCount = requiredBuildingCount - currentBuildingCount; // Calculate the remaining count
-                goalSlotCount.text = remainingCount > 0 ? remainingCount.ToString() : "0";
+                goalSlotCount.text = remainingCount > 0 ? "x" + remainingCount : "";
             }
         }
     
